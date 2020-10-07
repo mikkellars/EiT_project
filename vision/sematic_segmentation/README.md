@@ -14,6 +14,8 @@ A U-Net model is trained on both the [Fence Segmentation Dataset](https://github
 
 A SegNet model is trained on both the [Fence Segmentation Dataset](https://github.com/chen-du/De-fencing) and synthetic data.
 
+### Results
+
 ## References
 
 - [Deep learning based fence segmentation andremoval from an image using a video sequence](https://arxiv.org/pdf/1609.07727.pdf)
