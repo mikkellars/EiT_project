@@ -27,8 +27,11 @@ def parse_arguments():
 
 
 def main(args):
+    best_val_loss = float('inf')
+    
     args.decay_start = False
     args.start_epoch = 0
+
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     # Datasets
@@ -46,6 +49,7 @@ def main(args):
     if args.resume_model != '':
         saved_model = torch.load(args.resume_model)
         model.load_state_dict(saved_model["model_state_dict"])
+        best_val_loss = saved_model["loss"]
         print(f'Loaded {args.resume_model}. The model is trained for {saved_model["epoch"]} epochs with {saved_model["loss"]} loss')
 
     # Optimizer
@@ -56,7 +60,6 @@ def main(args):
     criterion = Loss()
 
     loop = tqdm(range(args.start_epoch, args.epochs))
-    best_val_loss = float('inf')
     start_time = time.time()
     for epoch in loop:
 
