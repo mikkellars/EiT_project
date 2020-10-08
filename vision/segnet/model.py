@@ -82,16 +82,19 @@ class Segnet(nn.Module):
     """creates a Segnet object
 
     Args:
-        input_num (int, optional): input channels (rgb). Defaults to 3.
-        label_num (int, optional): output channels (number of classes). Defaults to 2.
+        n_channels (int, optional): input channels (rgb). Defaults to 3.
+        n_classes (int, optional): output channels (number of classes). Defaults to 1.
     """
 
-    def __init__(self, input_num: int = 3, label_num: int = 2):
+    def __init__(self, n_channels: int = 3, n_classes: int = 1):
         super(Segnet, self).__init__()
+
+        self.n_channels = n_channels
+        self.n_classes = n_classes
 
         bm_momentum = 0.1
 
-        self.conv11 = nn.Conv2d(input_num, 64, kernel_size=3, padding=1)
+        self.conv11 = nn.Conv2d(n_channels, 64, kernel_size=3, padding=1)
         self.bn11 = nn.BatchNorm2d(64, momentum= bm_momentum)
         self.conv12 = nn.Conv2d(64, 64, kernel_size=3, padding=1)
         self.bn12 = nn.BatchNorm2d(64, momentum= bm_momentum)
@@ -150,7 +153,7 @@ class Segnet(nn.Module):
 
         self.conv12d = nn.Conv2d(64, 64, kernel_size=3, padding=1)
         self.bn12d = nn.BatchNorm2d(64, momentum= bm_momentum)
-        self.conv11d = nn.Conv2d(64, label_num, kernel_size=3, padding=1)
+        self.conv11d = nn.Conv2d(64, n_classes, kernel_size=3, padding=1)
 
     def forward(self, x):
         """Forward of Segnet
@@ -226,7 +229,7 @@ class DoubleConv(nn.Module):
             nn.ReLU(inplace=True),
             nn.Conv2d(mid_channels, out_channels, kernel_size=3, padding=1),
             nn.BatchNorm2d(out_channels),
-            nn.ReLu(inplace=True),
+            nn.ReLU(inplace=True),
         )
 
     def forward(self, x):
@@ -283,7 +286,7 @@ class OutConv(nn.Module):
 
 
 class UNet(nn.Module):
-    def __init__(self, n_channels = 3: int, n_classes: int = 2, bilinear: bool = True):
+    def __init__(self, n_channels: int = 3, n_classes: int = 2, bilinear: bool = True):
         super(UNet, self).__init__()
 
         self.n_channels = n_channels

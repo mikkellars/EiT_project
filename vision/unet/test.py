@@ -1,3 +1,5 @@
+"""
+"""
 
 
 import os
@@ -17,15 +19,16 @@ from utils import *
 def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser(description='Testing of SegNet for fence detection')
-    parser.add_argument('--data_dir', type=str, default='data/fence_data/test_set', help='path to data directory')
-    parser.add_argument('--model', type=str, default='models/model.pt', help='path to model file')
+    parser.add_argument('--data_dir', type=str, default='../data/fence_data/test_set', help='path to data directory')
+    parser.add_argument('--save_dir', type=str, default='images', help='path to directory to save figures')
+    parser.add_argument('--model', type=str, default='models/segnet_model.pt', help='path to model file')
     parser.add_argument('--show', action='store_false', help='show images and segmentation')
     parser.add_argument('--workers', type=int, default=8, help='number of workers for fetching data')
     args = parser.parse_args()
     return args
 
 
-def show(img, mask):
+def show(img, mask, path):
     plt.figure(figsize=(6,3))
     plt.subplot(1,2,1)
     plt.imshow(img)
@@ -36,7 +39,9 @@ def show(img, mask):
     plt.title('Mask')
     plt.axis('off')
     plt.tight_layout(True)
-    plt.show()
+    # plt.show()
+    plt.savefig(path)
+    plt.close('all')
 
 
 def main(args):
@@ -92,7 +97,7 @@ def main(args):
         if args.show:
             img = img[0].data.cpu().detach().numpy().astype(np.uint8)
             img = np.transpose(img, (1, 2, 0))
-            show(img, pred*255)
+            show(img, pred*255, f'{args.save_dir}/{i+1:04d}.png')
 
     for i, iou in enumerate(np.transpose(ious)):
         print(f'{classes[i]} => IoU: mean = {np.mean(iou):.4f} (+/ {np.std(iou):4f})')

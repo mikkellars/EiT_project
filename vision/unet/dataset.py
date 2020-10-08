@@ -32,12 +32,10 @@ class FenceDataset(Dataset):
     Raises:
         NotImplementedError: if mode unknown.
     """
-    def __init__(self, root: str, mode: str = 'train', transforms: bool = False,
-                 use_synth: bool = True):
+    def __init__(self, root: str, mode: str = 'train', transforms: bool = False):
         self.root = root
         self.mode = mode
         self.transforms = transforms
-        self.use_synth = use_synth
         self.resize = T.Resize(size=(512, 512))
 
         if mode == 'train':
@@ -45,12 +43,6 @@ class FenceDataset(Dataset):
             files = open(f'{root}/train.txt', 'rt').read().split('\n')[:-1]
             self.imgs = [f'{root}/images/{f}.jpg' for f in files]
             self.masks = [f'{root}/labels/{f}.png' for f in files]
-            if use_synth:
-                synth_files = files = open('synth_ml_data/train.txt', 'rt').read().split('\n')[:-1]
-                synth_imgs = [f'synth_ml_data/cycles/{f}.png' for f in synth_files]
-                synth_masks = [f'synth_ml_data/object_index/{f}.png' for f in synth_files]
-                self.imgs.extend(synth_imgs)
-                self.masks.extend(synth_masks)
         elif mode == 'val':
             files = open(f'{root}/val.txt', 'rt').read().split('\n')[:-1]
             self.imgs = [f'{root}/images/{f}.jpg' for f in files]
