@@ -2,21 +2,21 @@
 
 This folder explores the use of sematic segmentation methods for segmenting the fence in a image.
 
-The dataset [Fence Segmentation Dataset](https://github.com/chen-du/De-fencing) and synthetic data created with [synth-ml](https://gitlab.com/sdurobotics/vision/synth-ml), is used to train the different models. Examples of the used data can be seen below:
+The dataset [Fence Segmentation Dataset](https://github.com/chen-du/De-fencing) is used to train the different models. Examples of the used data can be seen below:
 
-| Real image | Real mask | Synthetic image | Synthetic mask |
-|:-:|:-:|:-:|:-:|
-| ![](assets/data/real_image.png) | ![](assets/data/real_mask.png) | ![](assets/data/synth_image.png) | ![](assets/data/synth_mask.png) |
+| Real image | Real mask |
+|:-:|:-:|
+| ![](segnet/assets/data/real_image.png) | ![](segnet/assets/data/real_mask.png) |
 
 ## U-Net
 
-A U-Net model is trained on both the [Fence Segmentation Dataset](https://github.com/chen-du/De-fencing) and synthetic data.
+A U-Net model is trained on both the [Fence Segmentation Dataset](https://github.com/chen-du/De-fencing).
 
 ### Results
 
 ## SegNet
 
-A SegNet model is trained on both the [Fence Segmentation Dataset](https://github.com/chen-du/De-fencing) and synthetic data.
+A SegNet model is trained on both the [Fence Segmentation Dataset](https://github.com/chen-du/De-fencing).
 
 ### Results
 
