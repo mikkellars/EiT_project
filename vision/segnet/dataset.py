@@ -74,7 +74,7 @@ class FenceDataset(Dataset):
 
         # Apply color transformation
         if self.transforms is True and random.random() > 0.5:
-            trancolor = T.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05)
+            trancolor = T.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.5)
             img = trancolor(img)
 
         img = np.array(img)
@@ -97,16 +97,16 @@ class FenceDataset(Dataset):
                 img = np.flipud(img)
                 mask = np.flipud(mask)
 
-            # Random crop
-            if random.random() > 0.0:
-                img_size = random.randint(512, img.shape[0])
-                img = Image.fromarray(img)
-                mask = Image.fromarray(mask)
-                i, j, h, w = T.RandomCrop.get_params(img, output_size=(img_size, img_size))
-                img = F.crop(img, i, j, h, w)
-                mask = F.crop(mask, i, j, h, w)
-                img = np.array(img)
-                mask = np.array(mask)
+            # # Random crop
+            # if random.random() > 0.0:
+            #     img_size = random.randint(512, img.shape[0])
+            #     img = Image.fromarray(img)
+            #     mask = Image.fromarray(mask)
+            #     i, j, h, w = T.RandomCrop.get_params(img, output_size=(img_size, img_size))
+            #     img = F.crop(img, i, j, h, w)
+            #     mask = F.crop(mask, i, j, h, w)
+            #     img = np.array(img)
+            #     mask = np.array(mask)
 
         # Convert mask
         mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)

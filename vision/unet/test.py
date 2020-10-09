@@ -3,6 +3,9 @@
 
 
 import os
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent.parent))
 import time
 import datetime
 import torch
@@ -13,15 +16,15 @@ from torch.utils.data import DataLoader
 from torch.autograd import Variable
 from dataset import *
 from model import *
-from utils import *
+from utils.utils import * 
 
 
 def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser(description='Testing of SegNet for fence detection')
-    parser.add_argument('--data_dir', type=str, default='../data/fence_data/test_set', help='path to data directory')
-    parser.add_argument('--save_dir', type=str, default='images', help='path to directory to save figures')
-    parser.add_argument('--model', type=str, default='models/segnet_model.pt', help='path to model file')
+    parser.add_argument('--data_dir', type=str, default='data/fence_data/test_set', help='path to data directory')
+    parser.add_argument('--save_dir', type=str, default='unet/images', help='path to directory to save figures')
+    parser.add_argument('--model', type=str, default='unet/models/unet_checkpoint.pt', help='path to model file')
     parser.add_argument('--show', action='store_false', help='show images and segmentation')
     parser.add_argument('--workers', type=int, default=8, help='number of workers for fetching data')
     args = parser.parse_args()
@@ -53,11 +56,14 @@ def main(args):
     saved_model = torch.load(args.model)
     print(f'Loaded {args.model}. The model is trained for {saved_model["epoch"]} epochs with {saved_model["loss"]} loss')
 
-    model = Segnet(3, n_classes)
+    model = UNet(3, 1)
     model.load_state_dict(saved_model["model_state_dict"])
     model.to(device)
 
-    criterion = Loss()
+    if model.n_classes > 1:
+        criterion = nn.CrossEntropyLoss()
+    else:
+        criterion = nn.BCEWithLogitsLoss()
 
     accs, intersections, unions, ious, times = [], [], [], [], []
 
@@ -68,8 +74,10 @@ def main(args):
 
         img, mask = data
 
-        img = Variable(img).to(device)
-        mask = Variable(mask).to(device)
+        img = img.to(device, dtype=torch.float32)
+        mask_type = torch.float32 if model.n_classes == 1 else torch.long
+        mask = mask.to(device, dtype=mask_type)
+        mask = mask.view(mask.size(0), 1, mask.size(1), mask.size(2))
 
         with torch.set_grad_enabled(False):
             pred_time = time.time()
@@ -78,11 +86,11 @@ def main(args):
 
             loss = criterion(pred, mask)
 
-        pred = pred.data.cpu().detach().numpy()[0][1]
+        pred = pred.data.cpu().detach().numpy()[0]
         pred[pred > 0] = 1
         pred[pred < 0] = 0
 
-        mask = mask.data.cpu().detach().numpy()
+        mask = mask.data.cpu().detach().numpy()[0]
 
         acc, pix = accuracy(pred, mask)
         accs.append(acc)
@@ -97,7 +105,7 @@ def main(args):
         if args.show:
             img = img[0].data.cpu().detach().numpy().astype(np.uint8)
             img = np.transpose(img, (1, 2, 0))
-            show(img, pred*255, f'{args.save_dir}/{i+1:04d}.png')
+            show(img, pred[0]*255, f'{args.save_dir}/{i+1:04d}.png')
 
     for i, iou in enumerate(np.transpose(ious)):
         print(f'{classes[i]} => IoU: mean = {np.mean(iou):.4f} (+/ {np.std(iou):4f})')
