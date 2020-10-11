@@ -99,7 +99,7 @@ def main(args):
 
                 phase_loss.append(loss.item())
 
-                loop.set_description(f'[Epoch {epoch+1:03d}/{args.epochs:03d}] [Phase {phase}] [Batch {i:03d}/{len(dataloaders[phase]):03d}] [Loss {np.mean(phase_loss):.8f}]')
+                loop.set_description(f'[Epoch {epoch+1:03d}/{args.epochs:03d}] [Phase {phase}] [Batch {i+1:03d}/{len(dataloaders[phase]):03d}] [Loss {np.mean(phase_loss):.8f}]')
 
             if phase == 'val':
                 scheduler.step(np.mean(phase_loss))

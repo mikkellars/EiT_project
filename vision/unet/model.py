@@ -84,6 +84,13 @@ class OutConv(nn.Module):
 
 
 class UNet(nn.Module):
+    """U-Net model.
+
+    Args:
+        n_channels (int, optional): Number of input channels. Defaults to 3.
+        n_classes (int, optional): Number of classes. Defaults to 2.
+        bilinear (bool, optional): If True, the upsampling algorithm is bilinear. Defaults to True.
+    """
     def __init__(self, n_channels: int = 3, n_classes: int = 2, bilinear: bool = True):
         super(UNet, self).__init__()
 
