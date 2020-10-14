@@ -11,6 +11,11 @@ import matplotlib.pyplot as plt
 from torchvision.ops import nms
 
 
+# --------------------------------------------
+# Array tool - tools to convert specified type
+# --------------------------------------------
+
+
 def to_numpy(data):
     if isinstance(data, torch.Tensor):
         data = data.detach().cpu().numpy()
@@ -39,6 +44,11 @@ def scalar(data):
         data = data.item()
 
     return data
+
+
+# ------------------
+# Bounding box tools
+# ------------------
 
 
 def loc2bbox(src_bbox, loc):
@@ -188,6 +198,11 @@ def generate_anchor_base(base_size: int = 16, ratios=[0.5, 1.0, 2.0],
     return anchor_base
 
 
+# -------------------
+# Visualization tools
+# -------------------
+
+
 def vis_image(img, ax=None):
     """Visualize a color image.
 
@@ -276,6 +291,11 @@ def vis_bbox(img, bbox, label=None, score=None, ax=None):
                     bbox={'facecolor': 'white', 'alpha': 0.5, 'pad': 0})
 
     return ax
+
+
+# ------------
+# Creator tool
+# ------------
 
 
 class ProposalTargetCreator(object):
