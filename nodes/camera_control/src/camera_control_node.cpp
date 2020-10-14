@@ -8,5 +8,6 @@ int main(int argc, char** argv)
   camera_control::camera_control camera_control(nodeHandle);
 
   ros::spin();
+  cv::destroyWindow("cam1");
   return 0;
 }

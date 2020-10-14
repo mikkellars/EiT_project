@@ -40,7 +40,12 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-find_package(OpenCV 4.2 REQUIRED)
+find_package(catkin REQUIRED COMPONENTS
+    cv_bridge
+    roscpp
+    image_transport
+    OpenCV
+    )
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
