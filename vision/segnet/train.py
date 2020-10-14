@@ -18,7 +18,7 @@ def parse_arguments():
     parser.add_argument('--save_dir', type=str, default='segnet/models', help='path to models directory')
     parser.add_argument('--bs', type=int, default=1, help='batch size (default: 1)')
     parser.add_argument('--workers', type=int, default=8, help='number of workers (default: 8')
-    parser.add_argument('--epochs', type=int, default=100, help='number of epochs (default: 1000)')
+    parser.add_argument('--epochs', type=int, default=200, help='number of epochs (default: 1000)')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate (default: 0.001)')
     parser.add_argument('--resume_model', type=str, default='segnet/models/segnet_checkpoint.pt', help='path to resume model')
     parser.add_argument('--decay_margin', type=float, default=0.01, help='margin for starting decay (default: 0.01)')
