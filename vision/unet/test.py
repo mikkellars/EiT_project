@@ -22,9 +22,9 @@ from utils.utils import *
 def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser(description='Testing of SegNet for fence detection')
-    parser.add_argument('--data_dir', type=str, default='data/fence_data/test_set', help='path to data directory')
-    parser.add_argument('--save_dir', type=str, default='unet/images', help='path to directory to save figures')
-    parser.add_argument('--model', type=str, default='unet/models/unet_checkpoint.pt', help='path to model file')
+    parser.add_argument('--data_dir', type=str, default='vision/data/fence_data/test_set', help='path to data directory')
+    parser.add_argument('--save_dir', type=str, default='vision/unet/images', help='path to directory to save figures')
+    parser.add_argument('--model', type=str, default='vision/unet/models/detectnet_model.pt', help='path to model file')
     parser.add_argument('--show', action='store_false', help='show images and segmentation')
     parser.add_argument('--workers', type=int, default=8, help='number of workers for fetching data')
     args = parser.parse_args()
@@ -50,13 +50,13 @@ def show(img, mask, path):
 def main(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-    dataset = FenceDataset(args.data_dir, 'test', False)
+    dataset = DetectNetDataset(args.data_dir, 'test', False)
     dataloader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=args.workers)
 
     saved_model = torch.load(args.model)
     print(f'Loaded {args.model}. The model is trained for {saved_model["epoch"]} epochs with {saved_model["loss"]} loss')
 
-    model = UNet(3, 1)
+    model = UNet(15, 1)
     model.load_state_dict(saved_model["model_state_dict"])
     model.to(device)
 
@@ -105,7 +105,7 @@ def main(args):
         if args.show:
             img = img[0].data.cpu().detach().numpy().astype(np.uint8)
             img = np.transpose(img, (1, 2, 0))
-            show(img, pred[0]*255, f'{args.save_dir}/{i+1:04d}.png')
+            show(img[:, :, :3], pred[0]*255, f'{args.save_dir}/{i+1:04d}.png')
 
     for i, iou in enumerate(np.transpose(ious)):
         print(f'{classes[i]} => IoU: mean = {np.mean(iou):.4f} (+/ {np.std(iou):4f})')
