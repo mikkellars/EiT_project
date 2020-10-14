@@ -32,7 +32,7 @@
   <!-- Combine joint values -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 
-  <!-- Show in Rviz   
+  <!-- Show in Rviz -->  
   <node name="rviz" pkg="rviz" type="rviz"/>
-  -->
+  
 </launch>
