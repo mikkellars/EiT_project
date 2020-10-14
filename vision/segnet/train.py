@@ -29,11 +29,7 @@ def parse_arguments():
     parser.add_argument('--workers', type=int, default=8, help='number of workers (default: 8')
     parser.add_argument('--epochs', type=int, default=200, help='number of epochs (default: 1000)')
     parser.add_argument('--lr', type=float, default=0.001, help='learning rate (default: 0.001)')
-<<<<<<< HEAD
     parser.add_argument('--resume_model', type=str, default='', help='path to resume model')
-=======
-    parser.add_argument('--resume_model', type=str, default='segnet/models/segnet_checkpoint.pt', help='path to resume model')
->>>>>>> c850c43a013279cc7fc295aa862cb5a86069e416
     parser.add_argument('--decay_margin', type=float, default=0.01, help='margin for starting decay (default: 0.01)')
     parser.add_argument('--lr_decay', type=float, default=0.01, help='learning decay (default: 0.01)')
     parser.add_argument('--w_decay', type=float, default=1e-8, help='weight decay RMSprop (default: 1e-8)')
