@@ -8,25 +8,20 @@ import sys
 sys.path.insert(0, os.getcwd())
 
 import numpy as np
-import argparse
-import json
 
 def parse_arguments():
+    import argparse
     parser = argparse.ArgumentParser(description='Script for splitting data into train and test')
-
-    parser.add_argument('--input_dir', type=str, default='data/fence_data/train_set/images', help='path/to/data')
-    parser.add_argument('--output_dir', type=str, default='data/fence_data/train_set', help='path/to/put/txt/files')
-    parser.add_argument('--ext', type=str, default='jpg', help='file extension')
-    parser.add_argument('--split_train', type=float, default=0.3, help='')
-
+    parser.add_argument('--input_dir', type=str, default='/home/mathias/Documents/scape_data/LUK3-L-02204-0G07-20-Bin2/upper-left', help='path/to/data')
+    parser.add_argument('--output_dir', type=str, default='/home/mathias/Documents/scape_data/LUK3-L-02204-0G07-20-Bin2/upper-left', help='path/to/put/txt/files')
+    parser.add_argument('--split_train', action='store_true', help='If True, only split into train and val')
     args = parser.parse_args()
-    print("input args:\n", json.dumps(vars(args), indent=4, separators=(",", ":")))
     return args
 
 
-def get_file_list_from_dir(data_dir, ext):
+def get_file_list_from_dir(data_dir):
     all_files = os.listdir(os.path.abspath(data_dir))
-    data_files = list(filter(lambda file: file.endswith(f'.{ext}'), all_files))
+    data_files = list(filter(lambda file: file.endswith('.png'), all_files))
     return data_files
 
 
@@ -37,31 +32,62 @@ def write_to_file(data, file_name):
     f.close()
 
 
-def main(args):
-    assert os.path.exists(args.input_dir), 'the input dir does not exsists'
-    assert os.path.exists(args.output_dir), 'the output dir does not exists'
+def split_data(input_dir: str, output_dir: str, split_train: bool = False):
+    """Splits data into train, validation, and test (or just train and validation if split_train is True).
 
-    data_path = args.input_dir
-    data_files = get_file_list_from_dir(data_path, args.ext)
-    data_files = [s.replace(f'.{args.ext}', '') for s in data_files]
+    Args:
+        input_dir (str): Directory with images.
+        output_dir (str): Directory to place txt files.
+        split_train (bool, optional): Split only for train, thus train and validation. Defaults to False.
+    """
+
+    assert os.path.exists(input_dir), 'the input dir does not exsists'
+    assert os.path.exists(output_dir), 'the output dir does not exists'
+
+    data_files = get_file_list_from_dir(input_dir)
+    data_files = [s.replace('.png', '') for s in data_files]
     data_files = np.array(data_files)
 
     data_len = len(data_files)
-    train_idxs = np.floor(args.split_train * data_len).astype(np.int32)
-    test_idxs = np.ceil((1 - args.split_train) * data_len).astype(np.int32)
-    
-    idx = np.hstack((np.ones(train_idxs), np.zeros(test_idxs))).astype(np.int32)
-    np.random.shuffle(idx)
 
-    train_set = data_files[idx==1]
-    test_set = data_files[idx==0]
+    if split_train is False:
+        train_idxs = np.floor(0.5 * data_len).astype(np.int32)
+        test_idxs = data_len - train_idxs
 
-    assert set(train_set) != set(test_set), 'something went wrong'
+        train_len = train_idxs
+        train_idxs = np.floor(0.7 * train_len).astype(np.int32)
+        val_idxs = train_len - train_idxs
 
-    write_to_file(train_set, f'{args.output_dir}/val.txt')
-    write_to_file(test_set, f'{args.output_dir}/train.txt')
+        idx = np.hstack((np.ones(test_idxs)+1, np.ones(val_idxs), np.zeros(train_idxs))).astype(np.int32)
+        np.random.shuffle(idx)
+
+        test_set = data_files[idx==2]
+        val_set = data_files[idx==1]
+        train_set = data_files[idx==0]
+        assert set(train_set) != set(test_set) != set(val_set), 'something went wrong'
+
+        write_to_file(test_set, f'{output_dir}/test.txt')
+        write_to_file(train_set, f'{output_dir}/train.txt')
+        write_to_file(val_set, f'{output_dir}/val.txt')
+
+    elif split_train is True:
+        train_idxs = np.floor(0.7 * data_len).astype(np.int32)
+        val_idxs = data_len - train_idxs
+
+        idx = np.hstack((np.ones(val_idxs), np.zeros(train_idxs))).astype(np.int32)
+        np.random.shuffle(idx)
+
+        val_set = data_files[idx==1]
+        train_set = data_files[idx==0]
+
+        assert set(train_set) != set(val_set), 'something went wrong'
+
+        write_to_file(train_set, f'{output_dir}/train.txt')
+        write_to_file(val_set, f'{output_dir}/val.txt')
+
+    print('Done!')
 
 
 if __name__ == '__main__':
     args = parse_arguments()
-    main(args)
+    split_data(args.input_dir, args.output_dir, args.split_train)

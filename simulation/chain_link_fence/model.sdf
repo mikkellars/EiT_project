@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+    <model name='chain_link_fence'>
+        <pose frame=''>0 0 -0.2 0 0 0</pose>
+	<static>true</static>
+	<link name='multi_isle_shed_link'>
+        <visual name='visual'>
+	   <geometry>
+	     <mesh>
+	       <uri>model://chain_link_fence/meshes/fence.dae</uri>
+	       <scale>10 10 10</scale>
+	     </mesh>
+	   </geometry>
+        </visual>
+	<collision name='collision'>
+	  <geometry>
+	    <mesh>
+	      <uri>model://chain_link_fence/meshes/fence.dae</uri>
+	       <scale>10 10 10</scale>
+	    </mesh>
+	  </geometry>
+	</collision>    
+    </link>
+  </model>
+</sdf>
