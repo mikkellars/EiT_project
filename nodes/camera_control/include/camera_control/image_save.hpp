@@ -18,7 +18,7 @@ public:
   virtual ~image_save();
 
 private:
-
+  cv::Mat in_img;
 };
 
 } /* namespace */
