@@ -18,7 +18,10 @@ classes = (
     'background',
     'fence'
 )
+
 n_classes = len(classes)
+
+imagenet_stats = ([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 
 
 class FenceDataset(Dataset):
@@ -152,9 +155,8 @@ class TexelDataset(Dataset):
         img = Image.open(img_path).convert('RGB')
 
         # Apply color transformation
-        if self.transforms and random.random() > 0.5:
-            trancolor = T.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05)
-            img = trancolor(img)
+        if self.transforms and random.random() < 0.5:
+            img = T.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5)(img)
 
         img = np.array(img)
 
@@ -167,14 +169,18 @@ class TexelDataset(Dataset):
         if self.transforms:
 
             # Random horizontal flipping
-            if random.random() > 0.5:
+            if random.random() < 0.5:
                 img = np.fliplr(img)
                 mask = np.fliplr(mask)
 
             # Random vertical flipping
-            if random.random() > 0.5:
+            if random.random() < 0.5:
                 img = np.flipud(img)
                 mask = np.flipud(mask)
+
+            if random.random() < 0.5:
+                k = random.randint(1, 3) * 2 + 1
+                img = cv2.blur(img, (k, k))
 
         # Convert mask
         mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
@@ -184,6 +190,12 @@ class TexelDataset(Dataset):
         img = np.transpose(img, (2, 0, 1))
         img = torch.from_numpy(img.astype(np.float32))
         mask = torch.from_numpy(mask.astype(np.int64))
+
+        img = T.Normalize(*imagenet_stats)(img)
+        
+        # mask_type = torch.float32 if n_classes == 1 else torch.long
+        mask = mask.to(torch.float32)
+        mask = mask.view(1, mask.size(0), mask.size(1))
 
         return img, mask
 
@@ -258,7 +270,7 @@ class DetectNetDataset(Dataset):
 
         # Convert mask
         mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
-        mask[mask != 0] = 1
+        mask[mask != 0] = 0.9
 
         # Resize
         img = np.array(self.resize(Image.fromarray(img)))
