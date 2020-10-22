@@ -22,7 +22,7 @@ def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser(description='Training to detect fences')
     parser.add_argument('--exp', type=str, default='resnet_unet', help='name of the experiment')
-    parser.add_argument('--data_dir', type=str, default='/home/mathias/Documents/experts_in_teams_proj/vision/data/fence_data/patch_train_set', help='path to data directory')
+    parser.add_argument('--data_dir', type=str, default='../data/fence_data/patch_train_set', help='path to data directory')
     parser.add_argument('--save_dir', type=str, default='models', help='path to models directory')
     parser.add_argument('--bs', type=int, default=8, help='batch size (default: 1)')
     parser.add_argument('--workers', type=int, default=8, help='number of workers (default: 8')
@@ -47,9 +47,9 @@ def main(args):
 
     data = faiv.DataBunch.create(dataset, val_dataset, bs=8, worker_init_fn=lambda *_: np.random.seed())
 
-    learner = faiv.learner.Learner(data, model, loss_func=torch.nn.MSELoss()).to_fp16()
+    learner = faiv.learner.Learner(data, model, loss_func=torch.nn.MSELoss())
 
-    learner.load('model')
+  #  learner.load('model')
     learner.fit_one_cycle(args.epochs, args.lr, wd=args.w_decay)
     learner.save('model')
 
