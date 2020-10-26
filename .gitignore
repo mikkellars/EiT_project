@@ -251,3 +251,8 @@ CATKIN_IGNORE
 *.code-workspace
 
 # End of https://www.toptal.com/developers/gitignore/api/ros,python,vscode,cmake,c++
+/dist_ransac/.idea/.gitignore
+/dist_ransac/.idea/dist_ransac.iml
+/dist_ransac/.idea/inspectionProfiles/profiles_settings.xml
+/dist_ransac/.idea/misc.xml
+/dist_ransac/.idea/modules.xml
