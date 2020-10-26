@@ -148,6 +148,45 @@
     </inertial>
   </link>
 
+   <!-- Sensor links -->
+  <link name="cam_link">
+    <collision name="cam_collision">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.05 0.05 0.05"/>
+      </geometry>
+    </collision>
+    <visual name="cam_vis">
+      <origin xyz="0 0 0.028" rpy="0 0 -1.5707"/>
+      <geometry>
+        <mesh filename="package://mybot_description/meshes/sport_camera.dae"/>
+      </geometry>
+    </visual>
+  </link>
+
+  <link name="laser"> 
+	  <visual> 
+	    <geometry> 
+	      <mesh filename="package://mybot_description/meshes/hokuyo.dae" />
+ 	    </geometry> 
+	    <material name="Green"/> 
+	  </visual> 
+  </link>
+  
+  <link name="gps_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.01 0.01 0.01" />          
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.01 0.01 0.01" />
+      </geometry>
+    </collision>
+  </link>
 
   <joint type="continuous" name="left_wheel_hinge">
     <origin xyz="-0.07 0.09 0" rpy="0 0 0"/>
@@ -168,6 +207,12 @@
     <joint_properties damping="1.0" friction="0.1"/>
   </joint>
 
+  <!-- Sensor joints -->
+  <joint type="fixed" name="cam_joint">
+    <origin xyz="0 -0.10 0.07" rpy="0 0 -1.5707"/>
+    <child link="cam_link"/>
+    <parent link="chassis"/>
+    <axis xyz="0 0 0" />
  <joint name="laser_joint" type="fixed">
     <origin xyz="0.17 0 0.1" rpy="0 0 3.1416" />
     <parent link="chassis" />
@@ -182,23 +227,12 @@
   </joint>
 -->
 
-<link name="laser"> 
-	<visual> 
-	<geometry> 
-	<mesh filename="package://mybot_description/meshes/hokuyo.dae" />
- 	</geometry> 
-	<material name="Green"/> 
-	</visual> 
-	<inertial>
- 	<mass value="0.001"/> 
-	<inertia 
-	ixx="0.0001" ixy="0.0" ixz="0.0" 
-	iyy="0.0001" iyz="0.0"
- 	izz="0.0001"/>
- 	</inertial>
 
- </link>
-
+  <joint name="gps_joint" type="fixed">
+    <origin xyz="0 0.5 0.07"/>
+    <parent link="chassis"/>
+    <child link="gps_link"/>
+  </joint>
 
 
 
