@@ -10,6 +10,7 @@ gps_control::gps_control(ros::NodeHandle& nodeHandle) :
 
 void gps_control::gps_callback(const sensor_msgs::NavSatFixConstPtr& msg)
 {
+  ROS_INFO("Status");
   ROS_INFO("Altitude [%f]", msg->altitude);
   ROS_INFO("Altitude [%f]", msg->latitude);
   ROS_INFO("Altitude [%f]", msg->longitude);
