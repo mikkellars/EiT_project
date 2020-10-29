@@ -6,6 +6,14 @@ camera_control::camera_control(ros::NodeHandle& nodeHandle) :
       nodeHandle_(nodeHandle)
 {
   cam_sub_ = nodeHandle_.subscribe("/rrbot/camera1/image_raw", 10, &camera_control::cam_img_callback, this);
+
+  cv::Mat img = imread("/home/mikkel/Downloads/coral.jpg", cv::IMREAD_COLOR);
+  std::string s_f("/home/mikkel/Downloads/test");
+  image_save::image_save img_save(s_f);
+  for (size_t var = 0; var < 5; ++var) {
+    img_save.save_data(img, 1.0 + var, 2.0, 3.0);
+  }
+
 }
 
 void camera_control::cam_img_callback(const sensor_msgs::Image& msg)

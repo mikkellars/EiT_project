@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
     cv_bridge
     roscpp
     image_transport
+    gps_control
 )
 
 ###################################
@@ -32,7 +33,8 @@ catkin_package(
     std_msgs
     image_transport
     cv_basics
-#  DEPENDS 
+
+#  DEPENDS
 )
 
 ###########
@@ -41,9 +43,12 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-find_package(
-    OpenCV
-    ) 
+#find_package(
+#    OpenCV REQUIRED
+#    exiv2 REQUIRED
+#)
+find_package(OpenCV REQUIRED)
+
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}

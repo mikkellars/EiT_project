@@ -165,14 +165,14 @@
   </link>
 
   <link name="laser"> 
-	  <visual> 
-	    <geometry> 
-	      <mesh filename="package://mybot_description/meshes/hokuyo.dae" />
- 	    </geometry> 
-	    <material name="Green"/> 
-	  </visual> 
+    <visual> 
+      <geometry> 
+        <mesh filename="package://mybot_description/meshes/hokuyo.dae" />
+      </geometry> 
+      <material name="Green"/> 
+    </visual> 
   </link>
-  
+
   <link name="gps_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
@@ -213,6 +213,7 @@
     <child link="cam_link"/>
     <parent link="chassis"/>
     <axis xyz="0 0 0" />
+ 
  <joint name="laser_joint" type="fixed">
     <origin xyz="0.17 0 0.1" rpy="0 0 3.1416" />
     <parent link="chassis" />
