@@ -24,7 +24,8 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   INCLUDE_DIRS
     include
-#  LIBRARIES
+  LIBRARIES
+    ${PROJECT_NAME}
   CATKIN_DEPENDS 
     roscpp
     sensor_msgs
@@ -45,11 +46,28 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a C++ executable
-add_executable(${PROJECT_NAME}
-  src/${PROJECT_NAME}_node.cpp
+add_library(${PROJECT_NAME}
   src/gps_control.cpp
 )
+
+install(
+  TARGETS ${PROJECT_NAME}
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}
+)
+install(
+  DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+
+
+
+## Declare a C++ executable
+#add_executable(${PROJECT_NAME}
+#  src/${PROJECT_NAME}_node.cpp
+#  src/gps_control.cpp
+#)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}

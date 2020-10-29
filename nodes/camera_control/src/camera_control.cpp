@@ -6,13 +6,22 @@ camera_control::camera_control(ros::NodeHandle& nodeHandle) :
       nodeHandle_(nodeHandle)
 {
   cam_sub_ = nodeHandle_.subscribe("/rrbot/camera1/image_raw", 10, &camera_control::cam_img_callback, this);
-
-  cv::Mat img = imread("/home/mikkel/Downloads/coral.jpg", cv::IMREAD_COLOR);
-  std::string s_f("/home/mikkel/Downloads/test");
-  image_save::image_save img_save(s_f);
-  for (size_t var = 0; var < 5; ++var) {
-    img_save.save_data(img, 1.0 + var, 2.0, 3.0);
+  gps_control::gps_control gps(nodeHandle);
+  ROS_INFO("[%d]",gps.get_status().status);
+  if (gps.get_status().status == -1) // STATUS PROBERLY ALSO ALWAYS 0 !!
+    ROS_ERROR("No GPS Signal");
+  else if (gps.get_status().status == 0) // GPS signal present
+  {
+    cv::Mat img = imread("/home/mikkel/Downloads/coral.jpg", cv::IMREAD_COLOR);
+    std::string s_f("/home/mikkel/Downloads/test");
+    image_save::image_save img_save(s_f);
+    for (size_t var = 0; var < 5; ++var) {
+      ROS_INFO("[%f]", gps.get_latitude());
+      img_save.save_data(img, gps.get_latitude(), gps.get_longitude(), gps.get_altitude()); // WRITES OUT 0.00000 !!
+    }
   }
+
+
 
 }
 
