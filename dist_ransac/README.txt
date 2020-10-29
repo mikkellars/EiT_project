@@ -1,1 +1,1 @@
-rosrun dist_ransac 
+rosrun dist_ransac ransac_sub.py
