@@ -27,7 +27,6 @@ imagenet_std = torch.tensor([0.229, 0.224, 0.225], dtype=torch.float32)
 def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser(description='Training to detect fences')
-<<<<<<< HEAD
     parser.add_argument('--train', action='store_false')
     parser.add_argument('--exp', type=str, default='unet_25', help='name of the experiment')
     parser.add_argument('--data_dir', type=str, default='vision/data/fence_data/train_set', help='path to data directory')
@@ -42,20 +41,6 @@ def parse_arguments():
     parser.add_argument('--lr_decay', type=float, default=0.1, help='learning decay')
     parser.add_argument('--wd', type=float, default=1e-5, help='weight decay')
     parser.add_argument('--lr_step_size', type=int, default=3, help='Learning rate scheduler step size')
-=======
-    parser.add_argument('--exp', type=str, default='resnet_unet', help='name of the experiment')
-    parser.add_argument('--data_dir', type=str, default='../data/fence_data/patch_train_set', help='path to data directory')
-    parser.add_argument('--save_dir', type=str, default='models', help='path to models directory')
-    parser.add_argument('--bs', type=int, default=8, help='batch size (default: 1)')
-    parser.add_argument('--workers', type=int, default=8, help='number of workers (default: 8')
-    parser.add_argument('--epochs', type=int, default=3, help='number of epochs (default: 1000)')
-    parser.add_argument('--lr', type=float, default=0.001, help='learning rate (default: 0.001)')
-    parser.add_argument('--resume_model', type=str, default='', help='path to resume model')
-    parser.add_argument('--decay_margin', type=float, default=0.01, help='margin for starting decay (default: 0.01)')
-    parser.add_argument('--lr_decay', type=float, default=0.01, help='learning decay of RMSprop (default: 0.01)')
-    parser.add_argument('--w_decay', type=float, default=1e-4, help='weight decay RMSprop (default: 1e-4)')
-    parser.add_argument('--momentum', type=float, default=0.9, help='momentum of RMSprop (default: 0.9)')
->>>>>>> f4493c55177b37a9b18fa72eae5194465b1ec19a
     args = parser.parse_args()
     return args
 
@@ -63,25 +48,9 @@ def parse_arguments():
 def train(args):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-<<<<<<< HEAD
     # --------
     # Training
     # --------
-=======
-    dataset = TexelDataset(args.data_dir, 'train', True)
-    val_dataset = TexelDataset(args.data_dir, 'val', False)
-
-    model = ResNetUNet(1).to(device)
-
-    data = faiv.DataBunch.create(dataset, val_dataset, bs=8, worker_init_fn=lambda *_: np.random.seed())
-
-    learner = faiv.learner.Learner(data, model, loss_func=torch.nn.MSELoss())
-
-  #  learner.load('model')
-    learner.fit_one_cycle(args.epochs, args.lr, wd=args.w_decay)
-    learner.save('model')
-
->>>>>>> f4493c55177b37a9b18fa72eae5194465b1ec19a
 
     train_data = FenceDataset(args.data_dir, 'train', True)
     train_dl = DataLoader(train_data, batch_size=args.bs, shuffle=True, num_workers=args.workers)
