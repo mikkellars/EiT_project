@@ -69,7 +69,7 @@ def train_model(model, criterion, dls, opt, n_classes:int,
 
                 with torch.set_grad_enabled(phase=='train'):
                     outputs = model(inputs)
-                    outputs = outputs['out']
+                    # outputs = outputs['out']
                     loss = criterion(outputs, masks)
 
                     if phase == 'train':

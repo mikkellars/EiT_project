@@ -36,7 +36,7 @@ def parse_arguments():
     parser.add_argument('--h_params', type=str, default='vision/deeplab/models/hparams.pt', help='path to h params file')
     parser.add_argument('--bs', type=int, default=2, help='batch size (default: 1)')
     parser.add_argument('--workers', type=int, default=8, help='number of workers (default: 8')
-    parser.add_argument('--epochs', type=int, default=10, help='number of epochs (default: 100)')
+    parser.add_argument('--epochs', type=int, default=1, help='number of epochs (default: 100)')
     parser.add_argument('--resume_model', type=str, default='vision/deeplab/models/deeplabv3_resnet50_epoch100_wts.pt', help='path to resume model')
     parser.add_argument('--lr_decay', type=float, default=0.1, help='learning decay of RMSprop (default: 0.01)')
     parser.add_argument('--lr_step_size', type=int, default=5, help='Learning rate scheduler step size')
@@ -112,17 +112,23 @@ def get_h_params(args):
     from bayes_opt import BayesianOptimization
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    train_data = TexelDataset(args.data_dir, 'train', True)
-    val_data = TexelDataset(args.data_dir, 'val', False)
+    
+    train_data = FenceDataset(args.data_dir, 'train', True)
+    val_data = FenceDataset(args.data_dir, 'val', False)
+    
     train_dl = DataLoader(train_data, batch_size=args.bs, shuffle=True, num_workers=args.workers, drop_last=True)
     val_dl = DataLoader(val_data, batch_size=1, shuffle=False, num_workers=args.workers, drop_last=False)
     dataloaders = {'train': train_dl, 'val': val_dl}
-    model = deeplabv3_resnet('resnet18')
-    model.to(device)
-    criterion = torch.nn.BCEWithLogitsLoss()
 
     def fit_with(lr:float, wd:float):
+        model = torchvision.models.segmentation.deeplabv3_resnet50(pretrained=True)
+        model.classifier = DeepLabHead(2048, 2)
+        model.to(device)
+        
+        criterion = torch.nn.CrossEntropyLoss().to(device)
+
         optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=wd)
+
         model, acc, loss = train_model(
             model=model,
             criterion=criterion,
@@ -134,6 +140,7 @@ def get_h_params(args):
             epochs=args.epochs,
             verbose=False
         )
+
         return acc
 
     pbounds = {'lr': (1e-4, 1e-2), 'wd': (1e-4, 0.4)}
@@ -143,12 +150,16 @@ def get_h_params(args):
         verbose=2,
         random_state=1,
     )
+
     optimizer.maximize()
+
     for i, res in enumerate(optimizer.res):
         print("Iteration {}: \n\t{}".format(i, res))
     print(optimizer.max)
+
     filename = f'{args.models_dir}/hparams.pt'
     print(f'Saving hyperparameters at {filename}')
+
     torch.save(optimizer.max, filename)
 
 
