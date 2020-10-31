@@ -4,8 +4,8 @@
 
 import os
 import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).parent.parent))
+sys.path.append(os.getcwd())
+
 import time
 import datetime
 import torch
@@ -16,6 +16,7 @@ from torch.utils.data import DataLoader
 from torch.autograd import Variable
 from dataset import *
 from model import *
+from utils.ut
 from utils.utils import * 
 
 

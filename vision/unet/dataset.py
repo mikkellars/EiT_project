@@ -9,7 +9,7 @@ import random
 import numpy as np
 import torch
 from torch.utils.data import Dataset
-from torchvision import transforms as T
+from torchvision import transforms
 from torchvision.transforms import functional as F
 from PIL import Image
 
@@ -18,116 +18,20 @@ classes = (
     'background',
     'fence'
 )
-
 n_classes = len(classes)
-
 imagenet_stats = ([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 
 
-class FenceDataset(Dataset):
-    """Fence Dataset.
-
-    Args:
-        root (str): Path to data.
-        mode (str, optional): Mode. Defaults to 'train'.
-        transforms (bool, optional): Performs transformations. Defaults to False.
-
-    Raises:
-        NotImplementedError: if mode unknown.
-    """
-    def __init__(self, root: str, mode: str = 'train', transforms: bool = False):
-        self.root = root
-        self.mode = mode
-        self.transforms = transforms
-        self.resize = T.Resize(size=(512, 512))
-
-        if mode == 'train':
-            # TODO: add synthetic data
-            files = open(f'{root}/train.txt', 'rt').read().split('\n')[:-1]
-            self.imgs = [f'{root}/images/{f}.jpg' for f in files]
-            self.masks = [f'{root}/labels/{f}.png' for f in files]
-        elif mode == 'val':
-            files = open(f'{root}/val.txt', 'rt').read().split('\n')[:-1]
-            self.imgs = [f'{root}/images/{f}.jpg' for f in files]
-            self.masks = [f'{root}/labels/{f}.png' for f in files]
-        elif mode == 'test':
-            img_files = os.path.join(root, 'images')
-            imgs = [os.path.join(img_files, f) for f in os.listdir(img_files)]
-            self.imgs = sorted(imgs)
-            mask_files = os.path.join(root, 'labels')
-            masks = [os.path.join(mask_files, f) for f in os.listdir(mask_files)]
-            self.masks = sorted(masks)
-        else:
-            raise NotImplementedError()
-
-    def __len__(self):
-        return len(self.imgs)
-
-    def __getitem__(self, index):
-        # Load image
-        img_path = self.imgs[index]
-        img = Image.open(img_path).convert('RGB')
-
-        # Apply color transformation
-        if self.transforms and random.random() > 0.5:
-            trancolor = T.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.5)
-            img = trancolor(img)
-
-        img = np.array(img)
-
-        # Load mask
-        mask_path = self.masks[index]
-        mask = Image.open(mask_path).convert('RGB')
-        mask = np.array(mask)
-
-        # Data augmentation
-        if self.transforms:
-
-            # Random horizontal flipping
-            if random.random() > 0.5:
-                img = np.fliplr(img)
-                mask = np.fliplr(mask)
-
-            # Random vertical flipping
-            if random.random() > 0.5:
-                img = np.flipud(img)
-                mask = np.flipud(mask)
-
-            # # Random crop
-            # if random.random() > 0.0:
-            #     img_size = random.randint(512, img.shape[0])
-            #     img = Image.fromarray(img)
-            #     mask = Image.fromarray(mask)
-            #     i, j, h, w = T.RandomCrop.get_params(img, output_size=(img_size, img_size))
-            #     img = F.crop(img, i, j, h, w)
-            #     mask = F.crop(mask, i, j, h, w)
-            #     img = np.array(img)
-            #     mask = np.array(mask)
-
-        # Convert mask
-        mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
-        mask[mask != 0] = 1
-
-        # Resize
-        img = np.array(self.resize(Image.fromarray(img)))
-        mask = np.array(self.resize(Image.fromarray(mask)))
-
-        # To tensor
-        img = np.transpose(img, (2, 0, 1))
-        img = torch.from_numpy(img.astype(np.float32))
-        mask = torch.from_numpy(mask.astype(np.int64))
-
-        return img, mask
-
-
 class TexelDataset(Dataset):
-
-    def __init__(self, root: str, mode: str = 'train', transforms: bool = False):
-
+    def __init__(self, root:str, mode:str='train', transform:bool=True):
         self.root = root
         self.mode = mode
-        self.transforms = transforms
-
+        self.transform = transform
+        self.clr_jitter = transforms.ColorJitter(0.5, 0.5, 0.5, 0.5)
+        self.to_grayscale = transforms.Grayscale(1)
+        self.to_tensor = transforms.ToTensor()
+        self.norm = transforms.Normalize(*imagenet_stats)
+        self.resize = transforms.Resize((256, 256))
         if mode == 'train':
             files = open(f'{root}/train.txt', 'rt').read().split('\n')[:-1]
             self.imgs = [f'{root}/images/{f}.png' for f in files]
@@ -143,74 +47,44 @@ class TexelDataset(Dataset):
             mask_files = os.path.join(root, 'labels')
             masks = [os.path.join(mask_files, f) for f in os.listdir(mask_files)]
             self.masks = sorted(masks)
-        else:
-            raise NotImplementedError()
-
-    def __len__(self):
-        return len(self.imgs)
-
-    def __getitem__(self, index):
-        # Load image
+        else: raise NotImplementedError()
+    
+    def __len__(self): return len(self.imgs)
+    
+    def __getitem__(self, index:int):
         img_path = self.imgs[index]
         img = Image.open(img_path).convert('RGB')
-
-        # Apply color transformation
-        if self.transforms and random.random() < 0.5:
-            img = T.ColorJitter(brightness=0.5, contrast=0.5, saturation=0.5, hue=0.5)(img)
-
-        img = np.array(img)
-
-        # Load mask
+        img = self.resize(img)
+        if self.transform:
+            img = self.clr_jitter(img)
         mask_path = self.masks[index]
-        mask = Image.open(mask_path).convert('RGB')
-        mask = np.array(mask)
-
-        # Data augmentation
-        if self.transforms:
-
-            # Random horizontal flipping
+        mask = Image.open(mask_path).convert('L')
+        mask = self.resize(mask)
+        img, mask = np.array(img), np.array(mask)
+        mask = np.where(mask!=0, 1, 0)
+        if self.transform:
             if random.random() < 0.5:
-                img = np.fliplr(img)
-                mask = np.fliplr(mask)
-
-            # Random vertical flipping
-            if random.random() < 0.5:
-                img = np.flipud(img)
-                mask = np.flipud(mask)
-
+                img = img[:, ::-1].copy()
+                mask = mask[:, ::-1].copy()
             if random.random() < 0.5:
                 k = random.randint(1, 3) * 2 + 1
                 img = cv2.blur(img, (k, k))
-
-        # Convert mask
-        mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
-        mask[mask != 0] = 1
-
-        # To tensor
-        img = np.transpose(img, (2, 0, 1))
-        img = torch.from_numpy(img.astype(np.float32))
-        mask = torch.from_numpy(mask.astype(np.int64))
-
-        img = T.Normalize(*imagenet_stats)(img)
-        
-        # mask_type = torch.float32 if n_classes == 1 else torch.long
-        mask = mask.to(torch.float32)
-        mask = mask.view(1, mask.size(0), mask.size(1))
-
+        img, mask = self.to_tensor(img), self.to_tensor(mask)
+        img = self.norm(img)
         return img, mask
 
 
-class DetectNetDataset(Dataset):
-
-    def __init__(self, root: str, mode: str = 'train', transforms: bool = False):
+class FenceDataset(torch.utils.data.Dataset):
+    def __init__(self, root:str, mode:str='train', transform:bool=True):
         self.root = root
         self.mode = mode
-        self.transforms = transforms
-        self.resize = T.Resize(size=(512, 512))
-        self.ddepth = cv2.CV_16S
-
+        self.transform = transform
+        self.clr_jitter = transforms.ColorJitter(0.5, 0.5, 0.5, 0.5)
+        self.to_grayscale = transforms.Grayscale(1)
+        self.to_tensor = transforms.ToTensor()
+        self.norm = transforms.Normalize(*imagenet_stats)
+        self.resize = transforms.Resize((400, 400))
         if mode == 'train':
-            # TODO: add synthetic data
             files = open(f'{root}/train.txt', 'rt').read().split('\n')[:-1]
             self.imgs = [f'{root}/images/{f}.jpg' for f in files]
             self.masks = [f'{root}/labels/{f}.png' for f in files]
@@ -225,85 +99,41 @@ class DetectNetDataset(Dataset):
             mask_files = os.path.join(root, 'labels')
             masks = [os.path.join(mask_files, f) for f in os.listdir(mask_files)]
             self.masks = sorted(masks)
-        else:
-            raise NotImplementedError()
-
-    def laplacian_filter(self, img, reps: int):
-        ret = img.copy()
-        for i in range(reps):
-            ret = cv2.Laplacian(ret, self.ddepth, ksize=3)
-            ret = cv2.convertScaleAbs(ret)
-        return ret
-
-    def __len__(self):
-        return len(self.imgs)
-
-    def __getitem__(self, index):
-        # Load image
+        else: raise NotImplementedError()
+    
+    def __len__(self): return len(self.imgs)
+    
+    def __getitem__(self, index:int):
         img_path = self.imgs[index]
         img = Image.open(img_path).convert('RGB')
-
-        # Apply color transformation
-        if self.transforms and random.random() > 0.5:
-            trancolor = T.ColorJitter(brightness=0.2, contrast=0.2, saturation=0.2, hue=0.5)
-            img = trancolor(img)
-
-        img = np.array(img)
-
-        # Load mask
+        img = self.resize(img)
+        if self.transform:
+            img = self.clr_jitter(img)
         mask_path = self.masks[index]
-        mask = Image.open(mask_path).convert('RGB')
-        mask = np.array(mask)
+        mask = Image.open(mask_path).convert('L')
+        mask = self.resize(mask)
+        img, mask = np.array(img), np.array(mask)
+        if self.transform:
+            if random.random() < 0.5:
+                img = img[:, ::-1].copy()
+                mask = mask[:, ::-1].copy()
+            if random.random() < 0.5:
+                k = random.randint(1, 3) * 2 + 1
+                img = cv2.blur(img, (k, k))
+        mask = np.where(mask!=0, 1, 0)
+        img, mask = self.to_tensor(img), self.to_tensor(mask).long().squeeze(0)
+        img = self.norm(img)
+        # mask = torch.nn.functional.one_hot(mask, 2).squeeze(0)
+        # mask = mask.permute(2, 0, 1)
+        return img, mask
 
-        # Data augmentation
-        if self.transforms:
 
-            # Random horizontal flipping
-            if random.random() > 0.5:
-                img = np.fliplr(img)
-                mask = np.fliplr(mask)
-
-            # Random vertical flipping
-            if random.random() > 0.5:
-                img = np.flipud(img)
-                mask = np.flipud(mask)
-
-        # Convert mask
-        mask = cv2.cvtColor(mask, cv2.COLOR_RGB2GRAY)
-        mask[mask != 0] = 0.9
-
-        # Resize
-        img = np.array(self.resize(Image.fromarray(img)))
-        mask = np.array(self.resize(Image.fromarray(mask)))
-
-        # Sobel x and y
-        sobel_x = cv2.Sobel(img, self.ddepth, 1, 0)
-        sobel_x = cv2.convertScaleAbs(sobel_x)
-
-        sobel_y = cv2.Sobel(img, self.ddepth, 0, 1)
-        sobel_y = cv2.convertScaleAbs(sobel_y)
-
-        # Laplacian
-        laplace_4 = self.laplacian_filter(img, 2)
-
-        laplace_8 = self.laplacian_filter(img, 3)
-
-        # To tensor
-        img = np.transpose(img, (2, 0, 1))
-        sobel_x = np.transpose(sobel_x, (2, 0, 1))
-        sobel_y = np.transpose(sobel_y, (2, 0, 1))
-        laplace_4 = np.transpose(laplace_4, (2, 0, 1))
-        laplace_8 = np.transpose(laplace_8, (2, 0, 1))
-
-        img = torch.from_numpy(img.astype(np.float32))
-        sobel_x = torch.from_numpy(sobel_x.astype(np.float32))
-        sobel_y = torch.from_numpy(sobel_y.astype(np.float32))
-        laplace_4 = torch.from_numpy(laplace_4.astype(np.float32))
-        laplace_8 = torch.from_numpy(laplace_8.astype(np.float32))
-        mask = torch.from_numpy(mask.astype(np.int64))
-
-        # return img, sobel_x, sobel_y, laplace_4, laplace_8, mask
-        return torch.cat([img, sobel_x, sobel_y, laplace_4, laplace_8], dim=0), mask
+def one_hot(mask:torch.Tensor)->torch.Tensor:
+    one_hot_map = list()
+    for c in range(n_classes):
+        c_map = torch.equal(mask, c)
+        one_hot_map.append(c_map)
+    one_hot_map = torch.stack(one_hot_map, dim=-1).float()
 
 
 if __name__ == '__main__':

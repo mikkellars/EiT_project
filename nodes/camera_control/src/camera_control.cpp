@@ -10,8 +10,6 @@ camera_control::camera_control(ros::NodeHandle& nodeHandle) :
 
 void camera_control::cam_img_callback(const sensor_msgs::Image& msg)
 {
-
-
     try
     {
       // Pointer used for the conversion from a ROS message to an OpenCV-compatible image

@@ -12,13 +12,22 @@ The dataset [Fence Segmentation Dataset](https://github.com/chen-du/De-fencing) 
 
 A U-Net model is trained on both the [Fence Segmentation Dataset](https://github.com/chen-du/De-fencing).
 
-### Results
-
 ## SegNet
 
 A SegNet model is trained on both the [Fence Segmentation Dataset](https://github.com/chen-du/De-fencing).
 
-### Results
+
+## DeepLabV3 with ResNet50
+
+A DeepLabV3 model is trained on both the [Fence Segmentation Dataset](https://github.com/chen-du/De-fencing).
+
+| Prediction 0 | Prediction 13 | Prediction 30 | Prediction 97 |
+|:------------:|:-------------:|:-------------:|:-------------:|
+| ![](deeplab/assets/pred_000.png) | ![](deeplab/assets/pred_013.png) | ![](deeplab/assets/pred_030.png) | ![](deeplab/assets/pred_097.png) |
+
+Loss 0.0909(+/-0.0405) and accuracy 0.9684(+/-0.0083) on test dataset.
+
+For more information see [deeplab/README.md](deeplab/README.md).
 
 ## References
 
