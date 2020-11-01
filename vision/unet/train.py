@@ -22,7 +22,7 @@ def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser(description='Training to detect fences')
     parser.add_argument('--exp', type=str, default='resnet_unet', help='name of the experiment')
-    parser.add_argument('--data_dir', type=str, default='../data/fence_data/patch_train_set', help='path to data directory')
+    parser.add_argument('--data_dir', type=str, default='vision/data/fence_data/patch_train_set', help='path to data directory')
     parser.add_argument('--save_dir', type=str, default='models', help='path to models directory')
     parser.add_argument('--bs', type=int, default=8, help='batch size (default: 1)')
     parser.add_argument('--workers', type=int, default=8, help='number of workers (default: 8')
