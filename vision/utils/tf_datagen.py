@@ -285,11 +285,11 @@ def create_mask(pred_mask: tf.Tensor) -> tf.Tensor:
     pred_mask = tf.expand_dims(pred_mask, axis=-1)
     return pred_mask
         
-DATA_PATH = '/home/mikkel/Documents/experts_in_teams_proj/vision/data/fence_data/train_set'
-datagenerator = gen_fence(DATA_PATH, '/images/training/', '/images/validation/')
-dataset = datagenerator.get_datasets()
-for image, mask in dataset['val'].take(1):
-    sample_image, sample_mask = image, mask#create_mask(mask)
+# DATA_PATH = '/home/mikkel/Documents/experts_in_teams_proj/vision/data/fence_data/train_set'
+# datagenerator = gen_fence(DATA_PATH, '/images/training/', '/images/validation/')
+# dataset = datagenerator.get_datasets()
+# for image, mask in dataset['val'].take(1):
+#     sample_image, sample_mask = image, mask#create_mask(mask)
 
-datagenerator.display_sample((sample_image[0], sample_mask[0]))
+# datagenerator.display_sample((sample_image[0], sample_mask[0]))
 
