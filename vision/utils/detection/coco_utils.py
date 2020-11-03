@@ -11,7 +11,7 @@ import torchvision
 from PIL import Image
 from pycocotools import mask as coco_mask
 from pycocotools.coco import COCO
-from utils.detection import transforms as T
+from vision.utils.detection import transforms as T
 # import transforms as T
 
 

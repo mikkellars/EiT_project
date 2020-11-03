@@ -8,9 +8,9 @@ import math
 import time
 import torch
 import torchvision.models.detection.mask_rcnn
-from utils.detection.coco_utils import get_coco_api_from_dataset
-from utils.detection.coco_eval import CocoEvaluator
-from utils.detection import utils 
+from vision.utils.detection.coco_utils import get_coco_api_from_dataset
+from vision.utils.detection.coco_eval import CocoEvaluator
+from vision.utils.detection import utils 
 # from coco_utils import get_coco_api_from_dataset
 # from coco_eval import CocoEvaluator
 # import utils
