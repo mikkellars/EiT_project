@@ -14,34 +14,28 @@ import time
 import numpy as np
 import torch
 import torchvision
-import torch.nn as nn
-import torch.nn.functional as F
 import albumentations as A
-import pytorch_lightning as pl
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-from PIL import Image
 from albumentations.pytorch import ToTensorV2
-from torch.utils.data import Dataset, DataLoader, random_split
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection import FasterRCNN
 from torchvision.models.detection.rpn import AnchorGenerator, RPNHead, RegionProposalNetwork
 from vision.utils.detection.engine import train_one_epoch, evaluate
 from vision.utils.detection import utils
-from vision.utils.detection import transforms as T
 
 
 def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser('Faster R-CNN trainer')
+    parser.add_argument('--exp', type=str, default='mask', help='name of the experiment')
     parser.add_argument('--data_dir', type=str, default='vision/data/fence_data/train_set', help='path to data directory')
-    parser.add_argument('--save_dir', type=str, default='', help='path to save directory')
+    parser.add_argument('--save_dir', type=str, default='vision/faster_rcnn/images', help='path to save directory')
     parser.add_argument('--model_dir', type=str, default='vision/faster_rcnn/models', help='path to models directory')
     parser.add_argument('--resume_model', type=str, default='', help='path to model to resume')
-    parser.add_argument('--epochs', type=int, default=10, help='number of epochs to run')
+    parser.add_argument('--epochs', type=int, default=100, help='number of epochs to run')
     parser.add_argument('--bs', type=int, default=1, help='batch size')
-    parser.add_argument('--lr', type=float, default=0.0005, help='learning rate')
-    parser.add_argument('--wd', type=float, default=0.0005, help='weight decay')
+    parser.add_argument('--lr', type=float, default=3e-4, help='learning rate')
+    parser.add_argument('--wd', type=float, default=0.0, help='weight decay')
     parser.add_argument('--workers', type=int, default=8, help='number of workers for the dataloader')
     args = parser.parse_args()
     return args
@@ -50,7 +44,7 @@ def parse_arguments():
 def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
-    train_data = TexelDataset(args.data_dir, get_transform(train=True))
+    train_data = TexelDataset(args.data_dir, get_transform(train=False))
     val_data = TexelDataset(args.data_dir, get_transform(train=False))
 
     torch.manual_seed(1)
@@ -85,50 +79,77 @@ def main(args):
 
     params = [p for p in model.parameters() if p.requires_grad]
     optimizer = torch.optim.Adam(params, lr=args.lr, weight_decay=args.wd)
-    lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.1)
-    metric_collector = []
+    # lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.1)
 
+    metric_collector_train = list()
     for epoch in range(args.epochs):
         metric_logger = train_one_epoch(model, optimizer, train_loader, device, epoch, print_freq=5)
-        metric_collector.append(metric_logger)
-        lr_scheduler.step()
+        metric_collector_train.append(metric_logger)
+        # lr_scheduler.step()
         metric_logger_val = evaluate(model, val_loader, device)
-        torch.save(model.state_dict(), f'{args.model_dir}/faster_rcnn_{args.epochs}.pt')
 
-    for data in val_loader:
+    torch.save(model.state_dict(), f'{args.model_dir}/faster_rcnn_{args.exp}_{args.epochs}.pt')
+    plot_metric_collector(metric_collector_train, path=f'{args.save_dir}/metric_logger_train.png')
+
+    for i, data in enumerate(val_loader):
         img, target = data
         img = img[0]
+        
         model.eval()
         with torch.no_grad():
             pred = model([img.to(device)])
+        
         boxes = pred[0]['boxes'].cpu().numpy()
         labels = pred[0]['labels'].cpu().numpy()
+        
         img = torchvision.transforms.Normalize(mean=[-0.485/0.229, -0.456/0.224, -0.406/0.225], std=[1/0.229, 1/0.224, 1/0.225])(img)
         img = torchvision.transforms.ToPILImage()(img)
         img = np.array(img)
-        visualize(img, boxes, labels)
-        plt.show()
-        plt.close('all')
+
+        path = f'{args.save_dir}/pred_{i:03d}.png'
+        visualize(img, boxes, labels, path=path)
 
 
-def plot_metric_collector(data):
-    loss, loss_clf, loss_box, loss_obj, loss_rpn = list(), list(), list(), list(), list()
-    for d in data:
+def plot_metric_collector(data, path=None):
+    epochs = list()
+    loss = list()
+    loss_clf = list()
+    loss_box = list()
+    loss_obj = list()
+    loss_rpn = list()
+
+    for i, d in enumerate(data):
+        epochs.append(i)
         loss.append(d.meters['loss'].avg)
         loss_clf.append(d.meters['loss_classifier'].avg)
         loss_box.append(d.meters['loss_box_reg'].avg)
         loss_obj.append(d.meters['loss_objectness'].avg)
         loss_rpn.append(d.meters['loss_rpn_box_reg'].avg)
 
+    plt.tight_layout()
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.plot(epochs, loss, label='Loss')
+    plt.plot(epochs, loss_clf, label='Loss classifier')
+    plt.plot(epochs, loss_box, label='Loss box regression')
+    plt.plot(epochs, loss_obj, label='Loss objectness')
+    plt.plot(epochs, loss_rpn, label='Loss rpn box regression')
+    plt.legend()
+
+    if path is not None: plt.savefig(path)
+    else: plt.show()
+
+    plt.close('all')
+    
 
 def get_transform(train:bool):
     if train:
         transforms = A.Compose(
             [
                 A.Resize(height=400, width=400, interpolation=cv2.INTER_CUBIC),
-                A.ChannelShuffle(p=0.5),
+                # A.ChannelShuffle(p=0.5),
                 A.HorizontalFlip(p=0.5),
-                A.ColorJitter(p=0.5),
+                # A.ColorJitter(p=0.5),
                 A.VerticalFlip(p=0.5),
                 A.Blur(p=0.5),
                 A.Normalize(),
@@ -147,7 +168,7 @@ def get_transform(train:bool):
     return transforms
 
 
-class TexelDataset(Dataset):
+class TexelDataset(torch.utils.data.Dataset):
     def __init__(self, path:str, transforms=None):
         self.path = path
         self.transforms = transforms
@@ -159,7 +180,6 @@ class TexelDataset(Dataset):
             annotations = json.load(f)
     
             for key in annotations.keys():
-                # if len(annotations[key][boxes]) == 0: break
                 
                 boxes, classes = list(), list()
                 for anno in annotations[key]:
@@ -255,9 +275,7 @@ def visualize_bbox(img, bbox, class_name, color=(255, 0, 0), thickness=2):
     """Visualizes a single bounding box on the image"""
     x_min, y_min, x_max, y_max = bbox
     x_min, y_min, x_max, y_max = int(x_min), int(y_min), int(x_max), int(y_max)
-   
     cv2.rectangle(img, (x_min, y_min), (x_max, y_max), (255, 0, 0), thickness)
-    
     ((text_width, text_height), _) = cv2.getTextSize(class_name, cv2.FONT_HERSHEY_SIMPLEX, 0.35, 1)    
     cv2.rectangle(img, (x_min, y_min - int(1.3 * text_height)), (x_min + text_width, y_min), (255, 0, 0), -1)
     cv2.putText(
@@ -272,15 +290,21 @@ def visualize_bbox(img, bbox, class_name, color=(255, 0, 0), thickness=2):
     return img
 
 
-def visualize(image, bboxes, category_ids, category_id_to_name:dict={0: 'background', 1: 'fence'}):
+def visualize(image, bboxes, category_ids, path=None,
+              category_id_to_name:dict={0: 'background', 1: 'fence'}):
     img = image.copy()
     for bbox, category_id in zip(bboxes, category_ids):
         class_name = category_id_to_name[category_id]
         img = visualize_bbox(img, bbox, class_name)
-    # plt.figure(figsize=(6, 6))
+
     plt.axis('off')
     plt.tight_layout()
     plt.imshow(img)
+
+    if path is not None: plt.savefig(path)
+    else: plt.show()
+    
+    plt.close('all')
 
 
 if __name__ == '__main__':
@@ -292,6 +316,7 @@ if __name__ == '__main__':
     print(f'Done! It took {end_time//60:.0f}m {end_time%60:.0f}s')
 
     # dataset = TexelDataset(args.data_dir, get_transform(train=False))
+    # print(f'Dataset has the length of {len(dataset)}')
     # for data in dataset:
     #     img, target = data
     #     img = torchvision.transforms.Normalize(mean=[-0.485/0.229, -0.456/0.224, -0.406/0.225], std=[1/0.229, 1/0.224, 1/0.225])(img)
