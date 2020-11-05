@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<sdf version="1.5">
+<sdf version="1.4">
     <model name='chain_link_fence'>
         <pose frame=''>0 0 -0.2 0 0 0</pose>
 	<static>true</static>
