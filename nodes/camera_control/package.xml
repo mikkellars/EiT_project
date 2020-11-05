@@ -16,5 +16,7 @@
   <depend>std_msgs</depend>
   <depend>image_transport</depend>
   <depend>cv_basics</depend>
+  <depend>gps_control</depend>
+
 
 </package>

@@ -5,6 +5,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <cv_bridge/cv_bridge.h>
 
+#include "image_save.hpp"
+#include "gps_control/gps_control.hpp"
 
 namespace camera_control {
 

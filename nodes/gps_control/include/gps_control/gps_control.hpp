@@ -15,12 +15,23 @@ public:
 	 * Constructor.
 	 */
   gps_control(ros::NodeHandle& nodeHandle);
+
+  /*!
+   * Get methods.
+   */
+  sensor_msgs::NavSatStatus get_status();
+  float get_altitude();
+  float get_latitude();
+  float get_longitude();
+
 	/*!
 	 * Destructor.
 	 */
   virtual ~gps_control();
 
 private:
+  sensor_msgs::NavSatStatus status;
+  float altitude, latitude, longitude;
 	ros::NodeHandle nodeHandle_;
   ros::Subscriber gps_sub_;
 

@@ -8,7 +8,7 @@ import sys
 import numpy as np
 
 
-def accuracy(pred, label):
+def accuracy(label, pred):
     """calculate the accuracy of a prediction
 
     Args:
@@ -18,14 +18,14 @@ def accuracy(pred, label):
     Returns:
         float, int: accuracy, number of pixel
     """
-    valid = (pred >= 0)
+    valid = (pred >= 0.05)
     acc_sum = (valid * (pred == label)).sum()
     valid_sum = valid.sum()
     acc = float(acc_sum) / (valid_sum + 1e-10)
     return acc, valid_sum
 
 
-def intersection_over_union(pred, label, num_classes):
+def intersection_over_union(label, pred, num_classes:int=1):
     """calculate intersection over union of a prediction
 
     Args:

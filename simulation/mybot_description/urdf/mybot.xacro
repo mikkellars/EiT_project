@@ -16,7 +16,6 @@
 
   <link name='chassis'>
     <pose>0 0 0.1 0 0 </pose>
-
     <inertial>
       <mass value="10.0"/>
       <origin xyz="0.0 0 0.06" rpy=" 0 0 0"/>
@@ -26,14 +25,14 @@
       </inertial>
 
     <collision name='collision'>
-<origin xyz="0.0 0.0 0.0" rpy=" 0 0 0"/>
+      <origin xyz="0.0 0.0 0.0" rpy=" 0 0 0"/>
       <geometry>
         <box size=".4 .2 .1"/>
       </geometry>
     </collision>
 
     <visual name='chassis_visual'>
-          <origin xyz="0 0 0.06" rpy="0.0 0.0 -1.57" />
+        <origin xyz="0 0 0.06" rpy="0.0 0.0 -1.57" />
         <geometry>
           <mesh filename="package://mybot_description/meshes/frobit_base.stl" />
         </geometry>
@@ -65,37 +64,35 @@
     </visual>-->
   </link>
         
-<joint name="caster_joint" type="fixed">
-            <parent link="chassis"/>
-            <child link="caster_link"/>
-      </joint>
+  <joint name="caster_joint" type="fixed">
+    <parent link="chassis"/>
+    <child link="caster_link"/>
+  </joint>
 
 
 
-<link name="caster_link">
-   
+  <link name="caster_link">
     <collision name="collision">
       <origin xyz="0.15 0 0.06" rpy=" 0 0 0"/>
-      <geometry>
-        <cylinder radius="0.05" length="0.04"/>
-      </geometry>
+        <geometry>
+          <cylinder radius="0.05" length="0.04"/>
+        </geometry>
     </collision>
     <visual name="caster_visual">
       <origin xyz="0.15 0 0.06" rpy=" 0 0 -1.57"/>
-      <geometry>
-        <mesh filename="package://mybot_description/meshes/front_wheel.stl" />
-      </geometry>
+        <geometry>
+          <mesh filename="package://mybot_description/meshes/front_wheel.stl" />
+        </geometry>
     </visual>
-<inertial>
-      <origin xyz="0 0 0.0" rpy="0 1.5707 1.5707"/>
-      <mass value="1"/>
-      <cylinder_inertia m="1" r="0.05" h="0.04"/>
-      <inertia
-        ixx="1.0" ixy="0.0" ixz="0.0"
-        iyy="1.0" iyz="0.0"
-        izz="1.0"/>
+    <inertial>
+        <origin xyz="0 0 0.0" rpy="0 1.5707 1.5707"/>
+        <mass value="1"/>
+        <cylinder_inertia m="1" r="0.05" h="0.04"/>
+        <inertia
+          ixx="1.0" ixy="0.0" ixz="0.0"
+          iyy="1.0" iyz="0.0"
+          izz="1.0"/>
     </inertial>
-    
   </link>
 
   <link name="left_wheel">
@@ -157,22 +154,22 @@
       </geometry>
     </collision>
     <visual name="cam_vis">
-      <origin xyz="0 0 0.028" rpy="0 0 -1.5707"/>
+      <origin xyz="0 0 0" rpy="0 0 -1.5707"/>
       <geometry>
-        <mesh filename="package://mybot_description/meshes/sport_camera.dae"/>
+        <box size="0.05 0.05 0.05"/>
       </geometry>
     </visual>
   </link>
 
   <link name="laser"> 
-	  <visual> 
-	    <geometry> 
-	      <mesh filename="package://mybot_description/meshes/hokuyo.dae" />
- 	    </geometry> 
-	    <material name="Green"/> 
-	  </visual> 
+    <visual> 
+      <geometry> 
+        <mesh filename="package://mybot_description/meshes/hokuyo.dae" />
+      </geometry> 
+      <material name="Green"/> 
+    </visual> 
   </link>
-  
+
   <link name="gps_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
@@ -192,7 +189,6 @@
     <origin xyz="-0.07 0.09 0" rpy="0 0 0"/>
     <parent link="chassis"/>
     <child link="left_wheel"/>
-    
     <axis xyz="0 1 0" rpy="0 0 0"/>
     <limit effort="100" velocity="100"/>
     <joint_properties damping="1.0" friction="0.1"/>
@@ -209,15 +205,24 @@
 
   <!-- Sensor joints -->
   <joint type="fixed" name="cam_joint">
-    <origin xyz="0 -0.10 0.07" rpy="0 0 -1.5707"/>
+    <origin xyz="0 -0.10 0.1" rpy="0 0 -1.5707"/>
     <child link="cam_link"/>
     <parent link="chassis"/>
     <axis xyz="0 0 0" />
- <joint name="laser_joint" type="fixed">
+  </joint>
+
+  <joint name="laser_joint" type="fixed">
     <origin xyz="0.17 0 0.1" rpy="0 0 3.1416" />
     <parent link="chassis" />
     <child link="laser" />
   </joint>
+
+  <joint name="gps_joint" type="fixed">
+    <origin xyz="0 0.5 0.07"/>
+    <parent link="chassis"/>
+    <child link="gps_link"/>
+  </joint>
+
 
 <!--
  <joint name="front_wheel_joint" type="revolute">
@@ -226,13 +231,6 @@
     <child link="laser" />
   </joint>
 -->
-
-
-  <joint name="gps_joint" type="fixed">
-    <origin xyz="0 0.5 0.07"/>
-    <parent link="chassis"/>
-    <child link="gps_link"/>
-  </joint>
 
 
 
