@@ -27,7 +27,7 @@ from vision.utils.detection import utils
 def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser('Faster R-CNN trainer')
-    parser.add_argument('--exp', type=str, default='mask', help='name of the experiment')
+    parser.add_argument('--exp', type=str, default='image', help='name of the experiment')
     parser.add_argument('--data_dir', type=str, default='vision/data/fence_data/train_set', help='path to data directory')
     parser.add_argument('--save_dir', type=str, default='vision/faster_rcnn/images', help='path to save directory')
     parser.add_argument('--model_dir', type=str, default='vision/faster_rcnn/models', help='path to models directory')
@@ -44,8 +44,8 @@ def parse_arguments():
 def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
-    train_data = TexelDataset(args.data_dir, get_transform(train=False))
-    val_data = TexelDataset(args.data_dir, get_transform(train=False))
+    train_data = TexelDataset('vision/data/fence_data/test_set', get_transform(train=True))
+    val_data = TexelDataset('vision/data/fence_data/test_set', get_transform(train=False))
 
     torch.manual_seed(1)
     indices = torch.randperm(len(train_data)).tolist()
@@ -142,14 +142,14 @@ def plot_metric_collector(data, path=None):
     plt.close('all')
     
 
-def get_transform(train:bool):
+def get_transform(train:bool, im_size:int=400):
     if train:
         transforms = A.Compose(
             [
-                A.Resize(height=400, width=400, interpolation=cv2.INTER_CUBIC),
-                # A.ChannelShuffle(p=0.5),
+                A.Resize(height=im_size, width=im_size, interpolation=cv2.INTER_CUBIC),
+                A.ChannelShuffle(p=0.5),
                 A.HorizontalFlip(p=0.5),
-                # A.ColorJitter(p=0.5),
+                A.ColorJitter(p=0.5),
                 A.VerticalFlip(p=0.5),
                 A.Blur(p=0.5),
                 A.Normalize(),
@@ -159,7 +159,7 @@ def get_transform(train:bool):
     else:
         transforms = A.Compose(
             [
-                A.Resize(height=400, width=400, interpolation=cv2.INTER_CUBIC),
+                A.Resize(height=im_size, width=im_size, interpolation=cv2.INTER_CUBIC),
                 A.Normalize(),
                 ToTensorV2(),
             ],
@@ -172,14 +172,15 @@ class TexelDataset(torch.utils.data.Dataset):
     def __init__(self, path:str, transforms=None):
         self.path = path
         self.transforms = transforms
-        # self.image_dir = f'{path}/images'
-        self.image_dir = f'{path}/labels'
+        self.image_dir = f'{path}/images'
+        # self.image_dir = f'{path}/labels'
 
         self.data = list()
         with open(f'{path}/annotations.json') as f:
             annotations = json.load(f)
     
             for key in annotations.keys():
+                if key == 'Eskild_fig_3_16.jpg': continue
                 
                 boxes, classes = list(), list()
                 for anno in annotations[key]:
@@ -195,16 +196,15 @@ class TexelDataset(torch.utils.data.Dataset):
                 
                 if len(boxes) == 0: break
             
-                img_name = key.replace('.png', '')
-                data = {'image': img_name, 'classes': classes, 'boxes': boxes}
+                # img_name = key.replace('.png', '')
+                data = {'image': key, 'classes': classes, 'boxes': boxes}
                 self.data.append(data)
     
     def __len__(self): return len(self.data)
 
     def __getitem__(self, idx:int):
         img = self.data[idx]['image']
-        # img = f'{self.image_dir}/{img}.jpg'
-        img = f'{self.image_dir}/{img}.png'
+        img = f'{self.image_dir}/{img}'
         img = cv2.imread(img)
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -291,7 +291,7 @@ def visualize_bbox(img, bbox, class_name, color=(255, 0, 0), thickness=2):
 
 
 def visualize(image, bboxes, category_ids, path=None,
-              category_id_to_name:dict={0: 'background', 1: 'fence'}):
+              category_id_to_name:dict={0: 'background', 1: 'texel'}):
     img = image.copy()
     for bbox, category_id in zip(bboxes, category_ids):
         class_name = category_id_to_name[category_id]
@@ -315,7 +315,7 @@ if __name__ == '__main__':
     end_time = time.time() - start_time
     print(f'Done! It took {end_time//60:.0f}m {end_time%60:.0f}s')
 
-    # dataset = TexelDataset(args.data_dir, get_transform(train=False))
+    # dataset = TexelDataset('vision/data/fence_data/test_set', get_transform(train=False))
     # print(f'Dataset has the length of {len(dataset)}')
     # for data in dataset:
     #     img, target = data
