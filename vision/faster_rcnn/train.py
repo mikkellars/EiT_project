@@ -28,10 +28,10 @@ def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser('Faster R-CNN trainer')
     parser.add_argument('--exp', type=str, default='image', help='name of the experiment')
-    parser.add_argument('--data_dir', type=str, default='vision/data/fence_data/train_set', help='path to data directory')
+    parser.add_argument('--data_dir', type=str, default='vision/data/fence_data/test_set', help='path to data directory')
     parser.add_argument('--save_dir', type=str, default='vision/faster_rcnn/images', help='path to save directory')
     parser.add_argument('--model_dir', type=str, default='vision/faster_rcnn/models', help='path to models directory')
-    parser.add_argument('--resume_model', type=str, default='', help='path to model to resume')
+    parser.add_argument('--resume_model', type=str, default='vision/faster_rcnn/models/faster_rcnn_image_5.pt', help='path to model to resume')
     parser.add_argument('--epochs', type=int, default=100, help='number of epochs to run')
     parser.add_argument('--bs', type=int, default=1, help='batch size')
     parser.add_argument('--lr', type=float, default=3e-4, help='learning rate')
@@ -180,7 +180,7 @@ class TexelDataset(torch.utils.data.Dataset):
             annotations = json.load(f)
     
             for key in annotations.keys():
-                if key == 'Eskild_fig_3_16.jpg': continue
+                #if key == 'Eskild_fig_3_16.jpg': continue
                 
                 boxes, classes = list(), list()
                 for anno in annotations[key]:
