@@ -1,3 +1,6 @@
 [submodule "ROS_RANSAC_PID"]
 	path = ROS_RANSAC_PID
 	url = https://github.com/JohanOusager/ROS_RANSAC_PID.git
+[submodule "vision/yolov5"]
+	path = vision/yolov5
+	url = https://github.com/ultralytics/yolov5
