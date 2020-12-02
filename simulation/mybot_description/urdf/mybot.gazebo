@@ -90,7 +90,7 @@
 </gazebo>-->
 
   <gazebo reference="chassis">
-    <sensor type="gpu_ray" name="laser">
+    <sensor type="ray" name="laser">  <!--gpu-ray-->
       <pose>0.18 0 0.1355 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>40</update_rate>
@@ -109,7 +109,7 @@
           <resolution>0.01</resolution>
         </range>
       </ray>
-        <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_gpu_laser.so">
+        <p<lugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so"> <!--libgazebo_ros_gpu_laser.so-->
         <topicName>/laser/scan</topicName>
         <frameName>laser</frameName>
       </plugin>
