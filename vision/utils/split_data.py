@@ -12,16 +12,16 @@ import numpy as np
 def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser(description='Script for splitting data into train and test')
-    parser.add_argument('--input_dir', type=str, default='/home/mathias/Documents/scape_data/LUK3-L-02204-0G07-20-Bin2/upper-left', help='path/to/data')
-    parser.add_argument('--output_dir', type=str, default='/home/mathias/Documents/scape_data/LUK3-L-02204-0G07-20-Bin2/upper-left', help='path/to/put/txt/files')
-    parser.add_argument('--split_train', action='store_true', help='If True, only split into train and val')
+    parser.add_argument('--input_dir', type=str, default='vision/data/fence_data/train_set/images', help='path/to/data')
+    parser.add_argument('--output_dir', type=str, default='vision/data/fence_data/train_set', help='path/to/put/txt/files')
+    parser.add_argument('--split_train', action='store_false', help='If True, only split into train and val')
     args = parser.parse_args()
     return args
 
 
 def get_file_list_from_dir(data_dir):
     all_files = os.listdir(os.path.abspath(data_dir))
-    data_files = list(filter(lambda file: file.endswith('.png'), all_files))
+    data_files = list(filter(lambda file: file.endswith('.png') or file.endswith('.jpg'), all_files))
     return data_files
 
 
@@ -45,7 +45,8 @@ def split_data(input_dir: str, output_dir: str, split_train: bool = False):
     assert os.path.exists(output_dir), 'the output dir does not exists'
 
     data_files = get_file_list_from_dir(input_dir)
-    data_files = [s.replace('.png', '') for s in data_files]
+    # data_files = [s.replace('.png', '') for s in data_files]
+    # data_files = [s.replace('.jpg', '') for s in data_files]
     data_files = np.array(data_files)
 
     data_len = len(data_files)

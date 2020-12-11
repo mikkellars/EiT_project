@@ -7,7 +7,6 @@ import os
 import sys
 sys.path.append(os.getcwd())
 
-
 import cv2
 import json
 import time
@@ -16,6 +15,7 @@ import torch
 import torchvision
 import albumentations as A
 import matplotlib.pyplot as plt
+from pycocotools.coco import COCO
 from albumentations.pytorch import ToTensorV2
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection import FasterRCNN
@@ -27,13 +27,13 @@ from vision.utils.detection import utils
 def parse_arguments():
     import argparse
     parser = argparse.ArgumentParser('Faster R-CNN trainer')
-    parser.add_argument('--exp', type=str, default='image', help='name of the experiment')
-    parser.add_argument('--data_dir', type=str, default='vision/data/fence_data/test_set', help='path to data directory')
+    parser.add_argument('--exp', type=str, default='hole', help='name of the experiment')
+    parser.add_argument('--data_dir', type=str, default='vision/data/fence_data/train_set', help='path to data directory')
     parser.add_argument('--save_dir', type=str, default='vision/faster_rcnn/images', help='path to save directory')
     parser.add_argument('--model_dir', type=str, default='vision/faster_rcnn/models', help='path to models directory')
-    parser.add_argument('--resume_model', type=str, default='vision/faster_rcnn/models/faster_rcnn_image_5.pt', help='path to model to resume')
-    parser.add_argument('--epochs', type=int, default=100, help='number of epochs to run')
-    parser.add_argument('--bs', type=int, default=1, help='batch size')
+    parser.add_argument('--resume_model', type=str, default='', help='path to model to resume')
+    parser.add_argument('--epochs', type=int, default=200, help='number of epochs to run')
+    parser.add_argument('--bs', type=int, default=2, help='batch size')
     parser.add_argument('--lr', type=float, default=3e-4, help='learning rate')
     parser.add_argument('--wd', type=float, default=0.0, help='weight decay')
     parser.add_argument('--workers', type=int, default=8, help='number of workers for the dataloader')
@@ -44,31 +44,20 @@ def parse_arguments():
 def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
-    train_data = TexelDataset('vision/data/fence_data/test_set', get_transform(train=True))
-    val_data = TexelDataset('vision/data/fence_data/test_set', get_transform(train=False))
+    train_data = HoleDataset('vision/faster_rcnn/data/holes_in_fence_coco/train', get_transform(train=True))
+    val_data = HoleDataset('vision/faster_rcnn/data/holes_in_fence_coco/valid', get_transform(train=False))
+    test_data = HoleDataset('vision/faster_rcnn/data/holes_in_fence_coco/test', get_transform(train=False))
 
-    torch.manual_seed(1)
-    indices = torch.randperm(len(train_data)).tolist()
-    n_train = int(len(train_data) * 0.8)
+    # torch.manual_seed(1)
+    # indices = torch.randperm(len(train_data)).tolist()
+    # n_train = int(len(train_data) * 0.8)
 
-    train_data = torch.utils.data.Subset(train_data, indices[-n_train:])
-    val_data = torch.utils.data.Subset(val_data, indices[:-n_train])
+    # train_data = torch.utils.data.Subset(train_data, indices[-n_train:])
+    # val_data = torch.utils.data.Subset(val_data, indices[:-n_train])
 
-    train_loader = torch.utils.data.DataLoader(
-        train_data,
-        batch_size=args.bs,
-        shuffle=True,
-        num_workers=args.workers,
-        collate_fn=utils.collate_fn
-    )
-
-    val_loader = torch.utils.data.DataLoader(
-        val_data,
-        batch_size=1,
-        shuffle=False,
-        num_workers=args.workers,
-        collate_fn=utils.collate_fn    
-    )
+    train_loader = torch.utils.data.DataLoader(train_data, batch_size=args.bs, shuffle=True, num_workers=args.workers, collate_fn=utils.collate_fn)
+    val_loader = torch.utils.data.DataLoader(val_data, batch_size=1, shuffle=False, num_workers=args.workers, collate_fn=utils.collate_fn)
+    test_loader = torch.utils.data.DataLoader(test_data, batch_size=1, shuffle=False, num_workers=args.workers, collate_fn=utils.collate_fn)
 
     n_classes = 2
     model = get_faster_rcnn(n_classes).to(device)
@@ -89,9 +78,32 @@ def main(args):
         metric_logger_val = evaluate(model, val_loader, device)
 
     torch.save(model.state_dict(), f'{args.model_dir}/faster_rcnn_{args.exp}_{args.epochs}.pt')
-    plot_metric_collector(metric_collector_train, path=f'{args.save_dir}/metric_logger_train.png')
+    plot_metric_train(metric_collector_train, path=f'{args.save_dir}/hole/metric_logger_train.png')
 
+    times = list()
     for i, data in enumerate(val_loader):
+        img, target = data
+        img = img[0]
+        
+        model.eval()
+        with torch.no_grad():
+            model_start = time.time()
+            pred = model([img.to(device)])
+            model_end = time.time() - start_time
+        
+        times.append(model_end)
+        
+        boxes = pred[0]['boxes'].cpu().numpy()
+        labels = pred[0]['labels'].cpu().numpy()
+        
+        img = torchvision.transforms.Normalize(mean=[-0.485/0.229, -0.456/0.224, -0.406/0.225], std=[1/0.229, 1/0.224, 1/0.225])(img)
+        img = torchvision.transforms.ToPILImage()(img)
+        img = np.array(img)
+
+        path = f'{args.save_dir}/hole/val/{i:03d}.png'
+        visualize(img, boxes, labels, path=path)
+
+    for i, data in enumerate(test_loader):
         img, target = data
         img = img[0]
         
@@ -106,11 +118,11 @@ def main(args):
         img = torchvision.transforms.ToPILImage()(img)
         img = np.array(img)
 
-        path = f'{args.save_dir}/pred_{i:03d}.png'
+        path = f'{args.save_dir}/hole/test/{i:03d}.png'
         visualize(img, boxes, labels, path=path)
 
 
-def plot_metric_collector(data, path=None):
+def plot_metric_train(data, path=None):
     epochs = list()
     loss = list()
     loss_clf = list()
@@ -241,6 +253,68 @@ class TexelDataset(torch.utils.data.Dataset):
         return img, target
 
 
+class HoleDataset(torch.utils.data.Dataset):
+    def __init__(self, root, transforms=None):
+        self.root = root
+        self.transforms = transforms
+        self.coco = COCO(os.path.join(root, '_annotations.coco.json'))
+        self.ids = list(sorted(self.coco.imgs.keys()))
+
+    def __getitem__(self, index):
+        coco = self.coco
+        img_id = self.ids[index]
+        
+        ann_ids = coco.getAnnIds(imgIds=img_id)
+        coco_annotation = coco.loadAnns(ann_ids)
+
+        f = coco.loadImgs(img_id)[0]['file_name']
+        img = cv2.imread(os.path.join(self.root, f), cv2.IMREAD_COLOR)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        num_objs = len(coco_annotation)
+        boxes, labels, areas = list(), list(), list()
+        for i in range(num_objs):
+            # Bbox
+            xmin = coco_annotation[i]['bbox'][0]
+            ymin = coco_annotation[i]['bbox'][1]
+            xmax = xmin + coco_annotation[i]['bbox'][2]
+            ymax = ymin + coco_annotation[i]['bbox'][3]
+            boxes.append([xmin, ymin, xmax, ymax])
+
+            # label
+            labels.append(coco_annotation[i]['category_id'])
+            
+            # area
+            areas.append(coco_annotation[i]['area'])
+
+        # labels = np.ones((num_objs, ), dtype=np.int64)
+
+        # areas = []
+        # for i in range(num_objs):
+        #     areas.append(coco_annotation[i]['area'])
+
+        if self.transforms is not None:
+            aug = self.transforms(image=img, bboxes=boxes, category_ids=labels)
+            img, boxes = aug['image'], aug['bboxes']
+
+        boxes = torch.as_tensor(boxes, dtype=torch.float32)
+        labels = torch.as_tensor(labels, dtype=torch.int64)
+        img_id = torch.tensor([img_id])
+        areas = torch.as_tensor(areas, dtype=torch.float32)
+        iscrowd = torch.zeros((num_objs,), dtype=torch.int64)
+
+        my_annotation = {}
+        my_annotation["boxes"] = boxes
+        my_annotation["labels"] = labels
+        my_annotation["image_id"] = img_id
+        my_annotation["area"] = areas
+        my_annotation["iscrowd"] = iscrowd
+
+        return img, my_annotation
+
+    def __len__(self): return len(self.ids)
+
+
 def get_faster_rcnn(n_classes:int):
     faster_rcnn = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=True)
     
@@ -291,7 +365,7 @@ def visualize_bbox(img, bbox, class_name, color=(255, 0, 0), thickness=2):
 
 
 def visualize(image, bboxes, category_ids, path=None,
-              category_id_to_name:dict={0: 'background', 1: 'texel'}):
+              category_id_to_name:dict={0: 'background', 1: 'Hole'}):
     img = image.copy()
     for bbox, category_id in zip(bboxes, category_ids):
         class_name = category_id_to_name[category_id]
@@ -315,7 +389,8 @@ if __name__ == '__main__':
     end_time = time.time() - start_time
     print(f'Done! It took {end_time//60:.0f}m {end_time%60:.0f}s')
 
-    # dataset = TexelDataset('vision/data/fence_data/test_set', get_transform(train=False))
+    # # Show data
+    # dataset = HoleDataset('vision/faster_rcnn/data/holes_in_fence_coco/train', get_transform(train=True))
     # print(f'Dataset has the length of {len(dataset)}')
     # for data in dataset:
     #     img, target = data
@@ -327,3 +402,12 @@ if __name__ == '__main__':
     #     visualize(img, boxes, category_ids)
     #     plt.show()
     #     plt.close('all')
+
+    # # Show model
+    # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    # n_classes = 2
+    # model = get_faster_rcnn(n_classes).to(device)
+
+    # wts = torch.load('vision/faster_rcnn/models/faster_rcnn_hole_200.pt')
+    # model.load_state_dict(wts)

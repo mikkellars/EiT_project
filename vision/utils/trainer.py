@@ -48,11 +48,14 @@ def train_model(model, criterion, dls, opt, n_classes:int,
     
     loss_meter, acc_meter = AverageMeter(), AverageMeter()
 
-    loop = tqdm(range(1, epochs+1)) if verbose else range(1, epochs+1)
-    for epoch in loop:
+    # loop = tqdm(range(1, epochs+1)) if verbose else range(1, epochs+1)
+    # for epoch in loop:
+    for epoch in range(1, epochs+1):
         if verbose:
-            loop.write('-' * 50)
-            loop.write(f'[Epoch {epoch}/{epochs}]')
+            # loop.write('-' * 50)
+            # loop.write(f'[Epoch {epoch}/{epochs}]')
+            print('-' * 50)
+            print(f'[Epoch {epoch}/{epochs}]')
 
         for phase in ['train', 'val']:
             loss_meter.reset()
@@ -61,7 +64,9 @@ def train_model(model, criterion, dls, opt, n_classes:int,
             if phase == 'train': model.train()
             else: model.eval()
 
-            for inputs, masks in iter(dls[phase]):
+            # for inputs, masks in iter(dls[phase]):
+            loop = tqdm(dls[phase], leave=False)
+            for inputs, masks in loop:
                 inputs = inputs.to(device)
                 masks = masks.to(device)
 
@@ -84,7 +89,7 @@ def train_model(model, criterion, dls, opt, n_classes:int,
                 acc = (outputs.argmax(dim=1) == masks).float().mean()
                 acc_meter.update(acc.item(), bs)
                     
-            if verbose: loop.write(f'[Phase {phase}]\t[Loss {loss_meter.avg:.4f}] [Accuracy {acc_meter.avg:.3f}]')
+            if verbose: print(f'[Phase {phase}]\t[Loss {loss_meter.avg:.4f}] [Accuracy {acc_meter.avg:.3f}]')
 
             tensorboard_log_scalar(writers[phase], name, epoch, loss_meter.avg, acc_meter.avg)
 
