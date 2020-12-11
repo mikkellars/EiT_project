@@ -1,3 +1,4 @@
+#! /usr/bin/env python3
 """Python file for writing geotag to image.
 Inspiration from https://answers.ros.org/question/332491/geotag-image-opencv-mavros/ 
 """
@@ -11,6 +12,7 @@ from sensor_msgs.msg import NavSatFix, Image
 from cv_bridge import CvBridge, CvBridgeError
 from datetime import datetime
 from fractions import Fraction
+from ....ros-sensor_msgs_ext.msg import gnss_fix
 
 class ImageSave:
     def __init__(self, save_dir):
@@ -43,7 +45,7 @@ class ImageSave:
         # log some info about the image topic
         rospy.loginfo("img time_ %i", cam_data.header.stamp.secs)
         rospy.loginfo("gps time: %i", gps_data.header.stamp.secs)
-
+        print('working')
 
         # GPS data
         self.status = gps_data.status
@@ -51,14 +53,14 @@ class ImageSave:
         self.latitude = gps_data.latitude
         self.longitude = gps_data.longitude
         self.gps_data_header_stamp = gps_data.header.stamp
+        print(self.altitude)
+        # # Img data
+        # try:
+        #     self.img = self.bridge.imgmsg_to_cv2(cam_data, "bgr8")
+        # except CvBridgeError as e:
+        #     print(e)
 
-        # Img data
-        try:
-            self.img = self.bridge.imgmsg_to_cv2(cam_data, "bgr8")
-        except CvBridgeError as e:
-            print(e)
-
-        self.__geotag_and_save()
+        # self.__geotag_and_save()
 
         
 
