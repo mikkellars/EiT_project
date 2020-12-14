@@ -192,7 +192,7 @@ class TexelDataset(torch.utils.data.Dataset):
             annotations = json.load(f)
     
             for key in annotations.keys():
-                if key == 'Eskild_fig_3_16.jpg': continue
+                #if key == 'Eskild_fig_3_16.jpg': continue
                 
                 boxes, classes = list(), list()
                 for anno in annotations[key]:
