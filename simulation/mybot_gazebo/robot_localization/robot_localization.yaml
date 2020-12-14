@@ -1,0 +1,8 @@
+name: robot_localization
+spec_version: 1
+spec_type: provider
+implements: robile_bringup/CombinedOdometry
+launch_file: launch/robot_localization.launch
+depends_on:
+  - robile_bringup/Control
+  - robile_bringup/SensorFilters

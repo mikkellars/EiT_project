@@ -9,7 +9,7 @@
   <arg name="debug" default="false"/>
   
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find mybot_gazebo)/worlds/fence.world"/>
+    <arg name="world_name" value="$(find mybot_gazebo)/worlds/complicated_world.world"/>
     <arg name="paused" value="$(arg paused)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="gui" value="$(arg gui)"/>
@@ -18,21 +18,49 @@
   </include>
 
   
-  <param name="robot_description" command="$(find xacro)/xacro --inorder '$(find mybot_description)/urdf/mybot.xacro'"/>
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find mybot_description)/urdf/mybot.xacro'"/>
 
   <node name="mybot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
    args="-urdf -param robot_description -model mybot" />
 
 
   <!-- send fake joint values -->
-  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="use_gui" value="False"/>
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" respawn="false" output="screen">
+   <!-- <rosparam command="load" file="$(find mybot_description)/config/joint_states.yaml" />-->
+
+</node>
+<rosparam command="load" file="$(find mybot_description)/config/joint_states.yaml" />
+<rosparam command="load" file="$(find mybot_control)/config/mybot_control.yaml" />
+<node name="controller_spawner"
+    pkg="controller_manager"
+    type="spawner" respawn="false"
+    output="screen" ns="/"
+    args="joint_publisher
+      velocity_controller"
+  />
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find mybot_description)/urdf/mybot.xacro'"/>
   </node>
 
-  <!-- Combine joint values -->
-  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
 
-  <!-- Show in Rviz -->  
-  <node name="rviz" pkg="rviz" type="rviz"/>
-  
+
+  <!-- Show in Rviz   -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mybot_gazebo)/rviz/final_config.rviz"/> 
+
+
+<!--    Provide the Map  -->
+<arg name="map_file" default="$(find mybot_gazebo)/maps/complicated_2.yaml"/>
+<node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)"/>    
+
+<!--   Start Localization   -->
+<include file="$(find amcl)/launch/amcl.launch"/>  
+
+
+<!--  Start Path Planning -->
+<include file="$(find husky_navigation)/launch/move_base.launch"/> 
 </launch>
+
+ 
+

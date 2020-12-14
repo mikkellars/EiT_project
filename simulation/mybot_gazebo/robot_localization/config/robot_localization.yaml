@@ -1,0 +1,100 @@
+# General
+frequency: 50.0
+sensor_timeout: 0.1
+two_d_mode: true
+transform_time_offset: 0.0
+transform_timeout: 0.0
+publish_tf: true
+publish_acceleration: false
+print_diagnostics: true
+
+# Frames
+odom_frame: odom
+base_link_frame: base_link
+world_frame: odom
+
+# Advanced
+use_control: true
+stamped_control: false
+control_timeout: 0.1
+control_config: [ true, false, false,
+                 false, false,  true]
+acceleration_limits: [1.0, 0.0, 0.0,
+                      0.0, 0.0, 2.0]
+deceleration_limits: [1.0, 0.0, 0.0,
+                      0.0, 0.0, 2.0]
+acceleration_gains:  [1.0, 0.0, 0.0,
+                      0.0, 0.0, 1.0]
+deceleration_gains:  [1.0, 0.0, 0.0,
+                      0.0, 0.0, 1.0]
+smooth_lagged_data: false
+history_length: 1.0
+reset_on_time_jump: true
+
+# Inputs
+odom0: /four_wheel_steering_controller/odom
+odom0_config: [false, false, false,  # x, y, z
+               false, false, false,  # roll, pitch, yaw
+                true, false, false,  # x velocity, y velocity, z velocity
+               false, false,  true,  # roll velocity, pitch velocity, yaw velocity
+               false, false, false]  # x acceleration, y acceleration, z acceleration
+odom0_differential: false
+odom0_queue_size: 1
+odom0_nodelay: false
+
+# IMU
+#imu0: /imu/biased
+#mu0_config: [false, false, false,  # x, y, z
+#              false, false, false,  # roll, pitch, yaw
+#              false, false, false,  # x velocity, y velocity, z velocity
+#              false, false,  true,  # roll velocity, pitch velocity, yaw velocity
+#              false, false, false]  # x acceleration, y acceleration, z acceleration
+#imu0_differential: false
+#imu0_queue_size: 1
+#imu0_nodelay: false
+
+# GPS
+gps0: /fix
+gps0_config: [true, true, true,  # x, y, z
+              false, false, false,  # roll, pitch, yaw
+              false, false, false,  # x velocity, y velocity, z velocity
+              false, false,  true,  # roll velocity, pitch velocity, yaw velocity
+              false, false, false]  # x acceleration, y acceleration, z acceleration
+gps0_differential: false
+gps0_queue_size: 1
+gps0_nodelay: false
+
+
+                            #   x     y     z  roll pitch   yaw    vx    vy    vz vrollvpitch  vyaw    ax    ay    az
+process_noise_covariance:   [   0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # x
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # y
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # z
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # roll
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # pitch
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # yaw
+                                0,    0,    0,    0,    0,    0,  1e1,    0,    0,    0,    0,    0,    0,    0,    0, # vx
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # vy
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # vz
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # vroll
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # vpitch
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,  1e1,    0,    0,    0, # vyaw
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # ax
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # ay
+                                0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0] # az
+
+                                #   x     y     z  roll pitch   yaw    vx    vy    vz vrollvpitch  vyaw    ax    ay    az
+initial_estimate_covariance:    [   1,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # x
+                                    0,    1,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # y
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # z
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # roll
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # pitch
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # yaw
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # vx
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # vy
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # vz
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # vroll
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # vpitch
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # vyaw
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # ax
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0, # ay
+                                    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,    0] # az

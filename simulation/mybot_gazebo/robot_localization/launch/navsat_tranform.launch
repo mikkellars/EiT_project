@@ -1,0 +1,9 @@
+<launch>
+  <node pkg="robot_localization" type="navsat_transform_node" name="navsat_transform_node" clear_params="true">
+      <rosparam command="load" file="$(find prato_bringup)/providers/skills/navigation/localization/robot_localization/config/navsat_transform.yaml" />
+
+      <remap from="imu/data" to="/imu/integrated"/>
+      <remap from="odometry/filtered" to="/odometry/filtered"/>
+      <remap from="gps/fix" to="/piksi/navsatfix_best_fix"/>
+  </node>
+</launch>
