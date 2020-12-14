@@ -1,4 +1,3 @@
-
 <?xml version="1.0"?>
 <robot>
 
@@ -128,8 +127,8 @@
  <gazebo reference="cam_link">
       <material>Gazebo/DarkGrey</material>
     </gazebo>
-</robot>
-  <gazebo> 
+<!--
+      <gazebo> 
     <plugin name="gps_controller" filename="libhector_gazebo_ros_gps.so">
         <alwayson>true</alwayson>
         <updaterate>1.0</updaterate>
@@ -142,5 +141,5 @@
         <velocitygaussiannoise>0.1 0.1 0.1</velocitygaussiannoise>
     </plugin>
   </gazebo> 
-
+  -->
 </robot>
