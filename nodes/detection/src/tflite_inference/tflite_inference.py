@@ -8,7 +8,7 @@ import rospy
 from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 from PIL import Image, ImageDraw, ImageFont
-from gps_geotag import GeoTag
+from tflite_inference.gps_geotag import GeoTag
 import cv2
 import numpy as np
 import importlib.util
