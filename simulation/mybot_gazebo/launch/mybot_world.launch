@@ -24,17 +24,26 @@
    args="-urdf -param robot_description -model mybot" />
 
 
+<<<<<<< HEAD
   <!-- send fake joint values -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" respawn="false" output="screen">
    <!-- <rosparam command="load" file="$(find mybot_description)/config/joint_states.yaml" />-->
 
 </node>
+=======
+  <!-- send fake joint values 
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" respawn="false" output="screen">
+    <rosparam command="load" file="$(find mybot_description)/config/joint_states.yaml" />
+
+</node>-->
+>>>>>>> tf_object_detect
 <rosparam command="load" file="$(find mybot_description)/config/joint_states.yaml" />
 <rosparam command="load" file="$(find mybot_control)/config/mybot_control.yaml" />
 <node name="controller_spawner"
     pkg="controller_manager"
     type="spawner" respawn="false"
     output="screen" ns="/"
+<<<<<<< HEAD
     args="joint_publisher
       velocity_controller"
   />
@@ -60,6 +69,28 @@
 
 <!--  Start Path Planning -->
 <include file="$(find husky_navigation)/launch/move_base.launch"/> 
+=======
+    args="joint_state_controller
+      mobile_base_controller"
+  />
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" respawn="false" output="screen">
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find mybot_description)/urdf/mybot.xacro'"/>
+    <remap from="/joint_states" to="/mybot/joint_states" />
+  </node>
+
+
+  <rosparam command="load" file="$(find mybot_gazebo)/robot_localization/config/navsat_transform.yaml" />
+  <rosparam command="load" file="$(find mybot_gazebo)/robot_localization/config/ekf_odom_baselink.yaml" />
+<node pkg="robot_localization" type="ekf_localization_node" name="ekf_odom_baselink" clear_params="true"/> 
+
+  <!-- Combine joint values -->
+ <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>-->
+
+  <!-- Show in Rviz   -->
+  <node name="rviz" pkg="rviz" type="rviz"/>
+>>>>>>> tf_object_detect
 </launch>
 
  
