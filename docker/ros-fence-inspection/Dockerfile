@@ -44,6 +44,9 @@ COPY nodes/detection /catkin_ws/src/detection
 COPY nodes/ROS_RANSAC_PID /catkin_ws/src/ROS_RANSAC_PID
 COPY nodes/ico_fence_following /catkin_ws/src/ico_fence_following
 
+# Copying the launch files
+COPY launch /catkin_ws/src/launch
+
 WORKDIR /catkin_ws
 RUN echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc
 RUN /bin/bash -c '. /opt/ros/melodic/setup.bash; catkin_init_workspace /catkin_ws/src'
