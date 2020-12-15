@@ -103,3 +103,18 @@ class LearnFollow():
     def stop_mc(self):
         self.publisher_right.publish(0)
         self.publisher_left.publish(0)
+
+    @staticmethod
+    def to_twist(vel_left, vel_right):
+        """Method for converting wheel vel to cmd twist messages
+        ONLY USED IN SIMULATION
+
+        Args:
+            vel_left (0-100%): Percentages of vel velocity
+            vel_right (0-100): Percentages of vel velocity
+        """
+        wheel_dist = 0.14
+		vel_lin = (vel_right + vel_left)/2.0 # [m/s]
+		vel_ang = (vel_right - vel_left)/ wheel_dist # [rad/s]
+        
+		return (vel_lin, vel_ang)
