@@ -1,5 +1,5 @@
 <launch>
     <node name="detection" pkg="detection" type="detection" output="screen" clear_params="true">
-        <param name="outdoor" value="1" />
+        <param name="use_tpu" value="True" />
     </node>
 </launch>

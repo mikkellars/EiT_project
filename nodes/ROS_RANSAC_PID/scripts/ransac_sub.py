@@ -186,16 +186,16 @@ class RANSAC_subscriber():
         rmsg.dist = min_dist
         rmsg.angle = min_angle
         self.publisher.publish(rmsg)
-       # cv.putText(self.image, f'Dist: {rmsg.dist:0.4f}, Angle: {np.rad2deg(rmsg.angle):0.4f}', (10,50), cv.FONT_HERSHEY_SIMPLEX, 2, (255,255,255))
+        cv.putText(self.image, f'Dist: {rmsg.dist:0.4f}, Angle: {np.rad2deg(rmsg.angle):0.4f}', (10,50), cv.FONT_HERSHEY_SIMPLEX, 2, (255,255,255))
 
-       # cx = np.int(np.round(self.image.shape[0]/2 + self.drawScale * min_dist_point[0]))
-       # cy = np.int(np.round(self.image.shape[1]/2 - self.drawScale * min_dist_point[1]))
+        cx = np.int(np.round(self.image.shape[0]/2 + self.drawScale * min_dist_point[0]))
+        cy = np.int(np.round(self.image.shape[1]/2 - self.drawScale * min_dist_point[1]))
 
-       # cv.circle(self.image, (cx,cy), 0, (255, 255, 255), thickness=3)
+        cv.circle(self.image, (cx,cy), 0, (255, 255, 255), thickness=3)
 
-       # cv.imwrite(f'/images/scan_{self.num:03d}.png', self.image)
-       # print(f'Writing image: {self.num}')
-       # self.num += 1
+        cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.png', self.image)
+        print(f'Writing image: {self.num}')
+        self.num += 1
        # print(f'Took { time.time() - start_time:0.3f} s')
         #cv.imshow('image', self.image)
         #cv.waitKey(1)

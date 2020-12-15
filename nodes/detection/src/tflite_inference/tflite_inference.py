@@ -136,10 +136,13 @@ class tfliteInference:
     def callback(self, Image):
         np_arr = np.fromstring(Image.data, np.uint8)
         image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-        image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
+      #  image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
         # Rezing image to fit network
         image_np = cv2.flip(image_np, 0)
         image_resized = cv2.resize(image_np, (self.width, self.height))
+
+        # Saving raw image
+        cv2.imwrite(f'/assets/images/raw/{self.img_num_raw:04d}.png', image_np)
 
         # Running inference
         boxes, classes, scores, num_detections = self.__inference(image_resized)
@@ -151,8 +154,6 @@ class tfliteInference:
             print(f'Found hole number: {self.img_num_det}')
             self.img_num_det += 1
 
-        # Saving raw image
-        cv2.imwrite(f'/assets/images/raw/{self.img_num_raw:04d}.png', image_np)
 
         self.img_num_raw += 1
 
