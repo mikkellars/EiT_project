@@ -9,13 +9,13 @@ from dist_ransac.msg import Polar_dist
 import matplotlib.pyplot as plt
 from time import time
 
-VEL = 0.1
-AV_MAX = 0.01
+VEL = 0.4
+AV_MAX = 0.04
 TARGET_DIST = 1
-P = 0.0033
-I = 0.0
-D = 0
-RATE = 50
+P = 0.01
+I = 0.01
+D = 0.01
+RATE = 10
 
 class polar_PID():
     def __init__(self):

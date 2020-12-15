@@ -16,7 +16,7 @@ class LearnFollow():
         self.learn_inteval = learn_inteval
 
         # Init ICO's
-        weight_init = random.uniform(0.0, 0.1)
+        weight_init = random.uniform(0.5, 1.0)
         self.left_obs_ico = ICO(lr=0.1, weight_predic = weight_init)
         self.right_obs_ico = ICO(lr=0.1, weight_predic = weight_init) 
         self.ico = ICO(lr=0.1, weight_predic = weight_init) 
@@ -39,10 +39,10 @@ class LearnFollow():
         reflex = 0
 
         if error > self.learn_inteval: # Turn left
-            reflex = -1
-        elif error < (-1*self.learn_inteval): # Turn right
             reflex = 1
-        
+        elif error < (-1*self.learn_inteval): # Turn right
+            reflex = -1
+
         return reflex, predictive
 
     def __callback(self, msg):
@@ -50,19 +50,19 @@ class LearnFollow():
 
         # Run and learning
         reflex, predictive = self.__detect_relfex(cur_dist)
-        mc_val = self.ico.run_and_learn(reflex, predictive)#self.ico.run_and_learn(1 if reflex == -1 else reflex, predictive)
+        mc_val = self.ico.run_and_learn(reflex, predictive)
         right_mc_val = 15
         left_mc_val = 15
 
-        mc_val *= 50
+        mc_val *= 100
 
         if reflex == -1:
-            self.publisher_right.publish(20)
-            self.publisher_left.publish(0)
-            # print('Learning right with right val: ', left_mc_val, "Error: ", predictive)
-        elif reflex == 1:
             self.publisher_right.publish(0)
             self.publisher_left.publish(20)
+            # print('Learning right with right val: ', left_mc_val, "Error: ", predictive)
+        elif reflex == 1:
+            self.publisher_right.publish(20)
+            self.publisher_left.publish(0)
             # print('Learning left with left val: ', right_mc_val, "Error: ", predictive)
         elif mc_val < 0:
             # Publish to PWM values

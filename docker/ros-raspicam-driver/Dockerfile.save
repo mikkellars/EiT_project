@@ -1,0 +1,21 @@
+FROM ros:melodic
+
+# Update and install
+RUN apt-get update && apt-get install -y \
+	git \
+	cmake \
+	python3-pip \
+	python-catkin-pkg \
+	python-empy \
+	python-nose \
+	libgtest-dev 
+#	libraspberry
+ypi-dev \ # Unable to locate package
+
+RUN pip3 install --upgrade pip
+RUN pip3 install picamera catkin_pkg 
+
+RUN git clone https://github.com/dganbold/raspicam_node.git /catkin_ws/src/raspicam_node
+WORKDIR /catkin_ws
+RUN catkin_make --pkg raspicam_node
+RUN source devel/setup.bash
