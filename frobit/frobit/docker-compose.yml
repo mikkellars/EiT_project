@@ -1,0 +1,77 @@
+version: '3'
+services:
+  ros-core:
+    image: ros:melodic
+    command: roscore
+    restart: always
+    network_mode: host
+
+  xbox-one-driver:
+    build: ../ros-xbox-one/
+    command: ./xow
+    restart: always
+    privileged: true
+ 
+  xbox-one-ros:
+    build: ../ros-xbox-one/
+    command: roslaunch --wait /joy.launch
+    restart: always
+    network_mode: host
+    privileged: true
+    volumes:
+     - /dev/:/dev/
+
+  xbox-joy-controller:
+    build: ../ros-joy-controller/
+    restart: always
+    network_mode: host
+    command: stdbuf -o L python /scripts/joy_node.py
+  
+  ros-pid:
+    build: ../ros-pid/
+    restart: always
+    network_mode: host
+    command: roslaunch --wait /scripts/frobit.launch
+  
+  ros-frobit-kinematics:
+    build: ../ros-frobit-kinematics/
+    restart: always
+    network_mode: host
+    command: stdbuf -o L python /scripts/kinematics_node.py
+    volumes:
+     - /home/pi/ros-frobit-kinematics/scripts/:/scripts/
+  
+  ros-frobit-driver:
+    build: ../ros-frobit-driver/
+    restart: always
+    network_mode: host
+    privileged: true
+    command: stdbuf -o L python /scripts/frobit_node.py
+    volumes:
+     - /home/pi/ros-frobit-driver/scripts/:/scripts/
+     - /sys/class/:/sys/class/
+
+  ros-raspicam-driver:
+    build: ../ros-raspicam-driver/
+    restart: always
+    network_mode: host
+    devices:
+      - "/dev/vcsm"
+      - "/dev/vchiq"
+    command: roslaunch raspicam_node camerav2_410x308_30fps.launch --wait
+
+  ros-gps-driver:
+    build: ../ros-gps-driver/
+    restart: always
+    network_mode: host
+    devices:
+     - "/dev/ttyUSB0"
+    command: rosrun nmea_navsat_driver nmea_serial_driver _port:=/dev/ttyUSB0 --wait
+
+  ros-lidar-driver:
+    build: ../ros-lidar-driver/
+    restart: always
+    network_mode: host
+    devices:
+     - "/dev/ttyACM0"
+    command: ./run_driver.sh # roslaunch --wait /catkin_ws/src/launch/hokuyo.launch
