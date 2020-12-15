@@ -7,8 +7,7 @@ import os
 import rospy
 from sensor_msgs.msg import Image, CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
-from PIL import Image, ImageDraw, ImageFont
-from tflite_inference.gps_geotag import GeoTag
+# from PIL import Image, ImageDraw, ImageFont
 import cv2
 import numpy as np
 import importlib.util
@@ -32,9 +31,6 @@ class tfliteInference:
         self.bridge = CvBridge()
         self.img = None
         self.img_num = 0
-
-        # GeoTag object
-        gpstag = GeoTag()
 
         if simulate:
             print('Running on simulator')
@@ -102,30 +98,30 @@ class tfliteInference:
 
         return boxes, classes, scores, num_detections
 
-    def __draw_results(self, img, boxes, classes, scores):
-        # # Run inference
-        # model_start = time.time()
-        # boxes, classes, scores = run_inference(interpreter, input_tensor)
-        # model_end = time.time() - model_start
-        # times.append(model_end)
-        # Draw results on image
-        image = Image.fromarray(img)
-        draw = ImageDraw.Draw(image)
-        colors = {0:(255, 0, 0)}
-        labels = {0:'Hole'}
+    def __draw_results(self, img, boxes, scores):
+        # Loop over all detections and draw detection box if confidence is above minimum threshold
+        imH, imW, _ = img.shape 
+        for i in range(len(scores)):
+            if ((scores[i] > 0.5) and (scores[i] <= 1.0)):
 
-        for i in range(len(boxes)):
-            if scores[i] > .5:
-                ymin = int(max(1, (boxes[i][0] * self.height)))
-                xmin = int(max(1, (boxes[i][1] * self.width)))
-                ymax = int(min(self.height, (boxes[i][2] * self.height)))
-                xmax = int(min(self.width, (boxes[i][3] * self.width)))
-                draw.rectangle((xmin, ymin, xmax, ymax), width=12, outline=colors[int(classes[i])])
-                draw.rectangle((xmin, ymin, xmax, ymin-10), fill=colors[int(classes[i])])
-                text = labels[int(classes[i])] + ' ' + str(scores[i]*100) + '%'
-                draw.text((xmin+2, ymin-10), text, fill=(0,0,0), width=2, font=ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 28))
+                # Get bounding box coordinates and draw box
+                # Interpreter can return coordinates that are outside of image dimensions, need to force them to be within image using max() and min()
+                ymin = int(max(1,(boxes[i][0] * imH)))
+                xmin = int(max(1,(boxes[i][1] * imW)))
+                ymax = int(min(imH,(boxes[i][2] * imH)))
+                xmax = int(min(imW,(boxes[i][3] * imW)))
+                
+                cv2.rectangle(img, (xmin,ymin), (xmax,ymax), (10, 255, 0), 2)
 
-        return image
+                # Draw label
+                object_name = 'Hole' # Look up object name from "labels" array using class index
+                label = '%s: %d%%' % (object_name, int(scores[i]*100)) # Example: 'person: 72%'
+                labelSize, baseLine = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.7, 2) # Get font size
+                label_ymin = max(ymin, labelSize[1] + 10) # Make sure not to draw label too close to top of window
+                cv2.rectangle(img, (xmin, label_ymin-labelSize[1]-10), (xmin+labelSize[0], label_ymin+baseLine-10), (255, 255, 255), cv2.FILLED) # Draw white box to put label text in
+                cv2.putText(img, label, (xmin, label_ymin-7), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 0), 2) # Draw label text
+
+        return img
 
     def callback_sim(self, Image):
         try:
@@ -139,19 +135,20 @@ class tfliteInference:
     def callback(self, Image):
         np_arr = np.fromstring(Image.data, np.uint8)
         image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-
+        image_np = cv2.cvtColor(image_np, cv2.COLOR_BGR2RGB)
         # Rezing image to fit network
         image_np = cv2.flip(image_np, 0)
-        image_np = cv2.resize(image_np, (self.width, self.height))
+        image_resized = cv2.resize(image_np, (self.width, self.height))
 
         # Running inference
-        boxes, classes, scores, num_detections = self.__inference(image_np)
+        boxes, classes, scores, num_detections = self.__inference(image_resized)
+        
         # Drawing boxes
-        if num_detections > 0:
-            image = self.__draw_results(image_np, boxes, classes, scores)
-            # Saving image
-            image.save(f'../images/img_{self.img_num:03d}.png')
-            print(f'Found hole number: {self.img_num}')
-            self.img_num += 1
-       # cv2.imwrite(f'../images/img_{self.img_num:03d}.png', image_np)
-       # self.img_num += 1
+       # if num_detections > 0:
+        image = self.__draw_results(image_np, boxes, scores)
+        # Saving image
+        cv2.imwrite(f'../images/img_{self.img_num:03d}.png', image)
+        print(f'Found hole number: {self.img_num}')
+        self.img_num += 1
+
+
