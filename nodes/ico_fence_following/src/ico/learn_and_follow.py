@@ -3,6 +3,7 @@
 import rospy
 import random
 from ico.ico import ICO
+from ico.datalogger import DataLogger
 from dist_ransac.msg import Polar_dist
 from std_msgs.msg import Float64
 
@@ -15,10 +16,15 @@ class LearnFollow():
         self.learn_inteval = learn_inteval
 
         # Init ICO's
-        weight_init = random.uniform(0.5, 1.0)
+        weight_init = random.uniform(0.0, 0.1)
         self.left_obs_ico = ICO(lr=0.1, weight_predic = weight_init)
         self.right_obs_ico = ICO(lr=0.1, weight_predic = weight_init) 
         self.ico = ICO(lr=0.1, weight_predic = weight_init) 
+
+        # Init ICO loggers
+        self.log_ico     = DataLogger('/assets/ico_logs/ico.txt')
+        self.log_ico_col = DataLogger('/assets/ico_logs/ico_col.txt')
+        self.log_idx = 0
 
         # Publisher to motors
         self.publisher_left = rospy.Publisher(self.pub_name_left, Float64, queue_size=1)
@@ -33,57 +39,30 @@ class LearnFollow():
         reflex = 0
 
         if error > self.learn_inteval: # Turn left
-            reflex = 1
-        elif error < (-1*self.learn_inteval): # Turn right
             reflex = -1
+        elif error < (-1*self.learn_inteval): # Turn right
+            reflex = 1
         
         return reflex, predictive
 
     def __callback(self, msg):
         cur_dist = msg.dist
-        if cur_dist == float('inf') or cur_dist == -float('inf'):
-            return
-        # # Run and learning
-        # reflex, predictive = self.__detect_relfex(cur_dist)
-
-        # left_mc_val = self.left_obs_ico.run_and_learn(1 if reflex == 1 else 0, predictive)
-        # right_mc_val = self.right_obs_ico.run_and_learn(1 if reflex == -1 else 0, predictive)
-        
-        # right_mc_val *= 50
-        # left_mc_val *= 50
-
-        # if reflex == -1:
-        #     self.publisher_right.publish(20)
-        #     self.publisher_left.publish(0)
-
-        #     print('Learning right with right val: ', left_mc_val, "Error: ", predictive)
-        # elif reflex == 1:
-        #     self.publisher_right.publish(0)
-        #     self.publisher_left.publish(20)
-        #     print('Learning left with left val: ', right_mc_val, "Error: ", predictive)
-        # else:
-        #     # Publish to PWM values
-        #     self.publisher_right.publish(right_mc_val)
-        #     self.publisher_left.publish(left_mc_val)
-
-        # print("Left val",left_mc_val, "Right val",right_mc_val)
 
         # Run and learning
         reflex, predictive = self.__detect_relfex(cur_dist)
-       # print("reflex",reflex, "predictive",predictive)
         mc_val = self.ico.run_and_learn(reflex, predictive)#self.ico.run_and_learn(1 if reflex == -1 else reflex, predictive)
         right_mc_val = 15
         left_mc_val = 15
 
-        mc_val *= 100
+        mc_val *= 50
 
         if reflex == -1:
-            self.publisher_right.publish(0)
-            self.publisher_left.publish(20)
-            # print('Learning right with right val: ', left_mc_val, "Error: ", predictive)
-        elif reflex == 1:
             self.publisher_right.publish(20)
             self.publisher_left.publish(0)
+            # print('Learning right with right val: ', left_mc_val, "Error: ", predictive)
+        elif reflex == 1:
+            self.publisher_right.publish(0)
+            self.publisher_left.publish(20)
             # print('Learning left with left val: ', right_mc_val, "Error: ", predictive)
         elif mc_val < 0:
             # Publish to PWM values
@@ -98,23 +77,14 @@ class LearnFollow():
             self.publisher_right.publish(right_mc_val)
             self.publisher_left.publish(left_mc_val) 
 
-        print(f"Reflex {reflex}, Input {predictive:0.3f}, weight {self.ico.weight_predic:0.3f}, output {mc_val:0.3f}, left_mc {left_mc_val:0.3f}, right_mc {right_mc_val:0.3f}")
-    
+        # print("Input", predictive, "weight", self.ico.weight_predic, "output", mc_val, "left_mc", left_mc_val, "right_mc", right_mc_val)
+
+        # Logging data from the ICO
+        self.log_ico.write_data(self.log_idx, [predictive, self.ico.weight_predic, mc_val])
+        self.log_ico_col.write_data(self.log_idx, [reflex])
+        self.log_idx += 1
+
+
     def stop_mc(self):
         self.publisher_right.publish(0)
         self.publisher_left.publish(0)
-
-    @staticmethod
-    def to_twist(vel_left, vel_right):
-        """Method for converting wheel vel to cmd twist messages
-        ONLY USED IN SIMULATION
-
-        Args:
-            vel_left (0-100%): Percentages of vel velocity
-            vel_right (0-100): Percentages of vel velocity
-        """
-        wheel_dist = 0.14
-		vel_lin = (vel_right + vel_left)/2.0 # [m/s]
-		vel_ang = (vel_right - vel_left)/ wheel_dist # [rad/s]
-        
-		return (vel_lin, vel_ang)

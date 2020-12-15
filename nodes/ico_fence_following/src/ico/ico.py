@@ -9,9 +9,9 @@ import math
 
 
 class ICO():
-    def __init__(self, lr:float = 0.1, weight_predic:float = random.uniform(0.0, 0.1)):
+    def __init__(self, lr:float = 0.1, weight_predic:float = random.random()):
         self.weight_reflex = 1.0
-        self.weight_predic = weight_predic
+        self.weight_predic = random.uniform(0.0, 0.1)# random.random()
         self.x_reflex = 0.0
         self.x_predic = 0.0
         self.lr = lr
@@ -27,7 +27,7 @@ class ICO():
             output (float): The propagated value
         """
         output = self.forward_prop(x_reflex, x_predic)
-        if x_reflex != 0:
+        if x_reflex > 0:
             self.update_weight(x_reflex)
 
         # Updates input signals 
@@ -55,8 +55,7 @@ class ICO():
             y (float): The propagated value
         """
         u = self.weight_reflex * x_reflex + self.weight_predic * x_predic
-      #  y = self.__sigmoid(u)
-        y = math.tanh(u)
+        y = self.__sigmoid(u)
 
         return y
 
