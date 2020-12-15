@@ -5,7 +5,7 @@
 # ROS
 import os
 import rospy
-from sensor_msgs.msg import Image, CompressedImage
+from sensor_msgs.msg import CompressedImage
 from cv_bridge import CvBridge, CvBridgeError
 # from PIL import Image, ImageDraw, ImageFont
 import cv2
@@ -35,10 +35,10 @@ class tfliteInference:
 
         if simulate:
             print('Running on simulator')
-            self.subscriber = rospy.Subscriber(self.sub_img_name, Image, self.callback_sim)
+            self.subscriber = rospy.Subscriber(self.sub_img_name, CompressedImage, self.callback_sim)
         else:
             print('Running on Frobit')
-            self.subscriber = rospy.Subscriber('/raspicam_node/image/compressed', CompressedImage, self.callback)
+            self.subscriber = rospy.Subscriber(self.sub_img_name, CompressedImage, self.callback)
 
     def __get_model_name(self, path):
         """Gets the correct model based on use_TPU is true.
@@ -125,12 +125,15 @@ class tfliteInference:
         return img
 
     def callback_sim(self, Image):
-        try:
-            cv_image = self.bridge.imgmsg_to_cv2(Image.data, "bgr8")
-        except CvBridgeError as e:
-            print(e)
-        print('works')
-        cv2.imshow("Image window", cv_image)
+        np_arr = np.fromstring(Image.data, np.uint8)
+        image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+        image_resized = cv2.resize(image_np, (self.width, self.height))
+        # Running inference
+        boxes, classes, scores, num_detections = self.__inference(image_resized)
+        
+        image_np = self.__draw_results(image_np, boxes, scores)
+        cv2.imshow("Image window", image_np)
         cv2.waitKey(3)
 
     def callback(self, Image):

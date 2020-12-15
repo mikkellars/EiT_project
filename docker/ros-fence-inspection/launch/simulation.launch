@@ -1,5 +1,6 @@
 <launch>
     <node name="detection" pkg="detection" type="detection.py" output="screen" clear_params="true">
-        <param name="use_tpu" value="True" />
+        <param name="use_tpu" value="false" />
+        <param name="simulate" value="true" />
     </node>
 </launch>

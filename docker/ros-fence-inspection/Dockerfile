@@ -13,6 +13,8 @@ RUN apt-get update && apt-get install -y \
 	curl \
 	zip \
 	apt-transport-https \
+	libcanberra-gtk-module \
+	libcanberra-gtk3-module \
 	nano
 
 RUN apt-get update && apt-get install -y \
