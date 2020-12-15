@@ -1,0 +1,2196 @@
+<?xml version='1.0'?>
+<sdf version='1.6'>
+  <world name='default'>
+    <light name='sun' type='directional'>
+      <cast_shadows>1</cast_shadows>
+      <pose frame=''>0 0 10 0 -0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <attenuation>
+        <range>1000</range>
+        <constant>0.9</constant>
+        <linear>0.01</linear>
+        <quadratic>0.001</quadratic>
+      </attenuation>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+
+<!-- A ground plane -->
+    <model name='ground_plane'>
+      <static>1</static>
+      <link name='link'>
+        <collision name='collision'>
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <surface>
+            <contact>
+            <!--  <collide_bitmask>65535</collide_bitmask>  -->
+              <ode/>
+            </contact>
+            <friction>
+              <ode>
+                <mu>100</mu>
+                <mu2>50</mu2>
+              </ode>
+              <torsional>
+                <ode/>
+              </torsional>
+            </friction>
+            <bounce/>
+          </surface>
+          <max_contacts>10</max_contacts>
+        </collision>
+        <visual name='visual'>
+          <cast_shadows>0</cast_shadows>0
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <script>
+              <uri>file://media/materials/scripts/gazebo.material</uri>
+              <name>Gazebo/Grey</name>
+            </script>
+          </material>
+        </visual>
+        <self_collide>0</self_collide>
+      <!-- <enable_wind>0</enable_wind>-->
+        <kinematic>0</kinematic>
+        <gravity>1</gravity>
+      </link>
+    </model>
+<!-- physics -->
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type='adiabatic'/>
+    <physics name='default_physics' default='0' type='ode'>
+      <max_step_size>0.002</max_step_size>
+      <real_time_factor>1</real_time_factor>
+      <real_time_update_rate>500</real_time_update_rate>
+
+      <ode>
+        <solver>
+          <iters>300</iters>
+          <sor>0.9</sor>
+          <type>quick</type>
+          <use_dynamic_moi_rescaling>0</use_dynamic_moi_rescaling>
+        </solver>
+        <constraints>
+          <cfm>0</cfm>
+          <erp>0.2</erp>
+          <contact_max_correcting_vel>100</contact_max_correcting_vel>
+          <contact_surface_layer>0.001</contact_surface_layer>
+        </constraints>
+      </ode>
+
+
+    </physics>
+   
+<scene>
+      <ambient>0.4 0.4 0.4 1</ambient>
+      <background>0.7 0.7 0.7 1</background>
+      <shadows>1</shadows>
+    </scene>
+  <!--  <wind/> fence_w_hole01 -->
+
+
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <latitude_deg>0</latitude_deg>
+      <longitude_deg>0</longitude_deg>
+      <elevation>0</elevation>
+      <heading_deg>0</heading_deg>
+    </spherical_coordinates>
+
+
+
+
+
+
+
+    <model name='chain_link_fence'>
+      <pose frame=''>0.640633 3.18926 -0.2 0 -0 0</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone'>
+      <pose frame=''>2.21873 3.19536 -0.2 1.58397 -0 0</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_0'>
+      <pose frame=''>3.79678 3.18232 -0.2 1.58397 -0 0</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+               <uri>model://hole_3_fence/meshes/fence_w_hole03.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+               <uri>model://hole_3_fence/meshes/fence_w_hole03.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1'>
+      <pose frame=''>-1.06578 3.28898 -0.2 1.58397 -0 0</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone'>
+      <pose frame=''>-2.03848 4.6929 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_5_fence/meshes/fence_w_hole05.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_5_fence/meshes/fence_w_hole05.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_0'>
+      <pose frame=''>-3.27871 5.66334 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1'>
+      <pose frame=''>-4.52909 6.61506 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_4_fence/meshes/fence_w_hole04.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_4_fence/meshes/fence_w_hole04.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_2'>
+      <pose frame=''>-6.41545 5.51048 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_2_clone'>
+      <pose frame=''>-6.86376 5.63047 -0.179014 1.58044 -0.008973 0.749388</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_2_clone_0'>
+      <pose frame=''>-8.01548 4.56094 -0.179014 1.58044 -0.008973 0.749388</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+             <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_2_clone_1'>
+      <pose frame=''>-9.16904 3.49605 -0.179014 1.58044 -0.008973 0.749388</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_2'>
+      <pose frame=''>-10.5233 2.97944 -0.2 1.58397 -0 0</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_3'>
+      <pose frame=''>-12.0875 2.97553 -0.2 1.58397 -0 0</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_1_fence/meshes/fence_w_hole01.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_1_fence/meshes/fence_w_hole01.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_4'>
+      <pose frame=''>-13.653 2.9686 -0.2 1.58397 -0 0</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_4_clone'>
+      <pose frame=''>-14.0879 1.29364 -0.2 1.58397 -0 0</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_4_clone_clone'>
+      <pose frame=''>-14.4148 0.589565 -0.188303 1.57093 -0.013173 1.56028</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_4_clone_clone_0'>
+      <pose frame=''>-14.378 -0.959511 -0.188303 1.57093 -0.013173 1.56028</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_4_clone_clone_1'>
+      <pose frame=''>-14.3579 -2.51713 -0.188303 1.57093 -0.013173 1.56028</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+             <uri>model://hole_4_fence/meshes/fence_w_hole04.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_4_fence/meshes/fence_w_hole04.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1_clone'>
+      <pose frame=''>-13.6962 -3.83531 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1_clone_0'>
+      <pose frame=''>-12.399 -4.83907 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1_clone_1'>
+      <pose frame=''>-11.2035 -5.72649 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+               <uri>model://hole_5_fence/meshes/fence_w_hole05.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+               <uri>model://hole_5_fence/meshes/fence_w_hole05.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1_clone_2'>
+      <pose frame=''>-9.95513 -6.67677 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1_clone_3'>
+      <pose frame=''>-8.69953 -7.60365 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1_clone_4'>
+      <pose frame=''>-7.44005 -8.53928 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_2_fence/meshes/fence_w_hole02.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_2_fence/meshes/fence_w_hole02.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1_clone_5'>
+      <pose frame=''>-6.1814 -9.47272 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_2_clone_1_clone'>
+      <pose frame=''>-4.92581 -9.35592 -0.179014 1.58044 -0.008973 0.749388</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_2_clone_1_clone_0'>
+      <pose frame=''>-3.75767 -8.29006 -0.179014 1.58044 -0.008973 0.749388</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_2_clone_1_clone_1'>
+      <pose frame=''>-2.60319 -7.20289 -0.179014 1.58044 -0.008973 0.749388</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_3'>
+      <pose frame=''>-2.78534 -6.11932 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_3_clone'>
+      <pose frame=''>-2.70947 -4.56902 -0.194338 1.57464 0.012602 -1.27502</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_1_fence/meshes/fence_w_hole01.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_1_fence/meshes/fence_w_hole01.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_3_clone_0'>
+      <pose frame=''>-3.181 -3.06382 -0.194338 1.57464 0.012602 -1.27502</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1_clone_6'>
+      <pose frame=''>-2.60007 -2.62731 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_2_fence/meshes/fence_w_hole02.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_2_fence/meshes/fence_w_hole02.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1_clone_7'>
+      <pose frame=''>-1.35833 -3.58358 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1_clone_8'>
+      <pose frame=''>-0.143645 -4.54802 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_1_clone_9'>
+      <pose frame=''>1.11729 -5.51546 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_5_fence/meshes/fence_w_hole05.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://hole_5_fence/meshes/fence_w_hole05.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_2_clone_1_clone_2'>
+      <pose frame=''>2.35528 -5.47942 -0.179014 1.58044 -0.008973 0.749388</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_2_clone_1_clone_2_clone'>
+      <pose frame=''>3.86987 -5.0862 -0.181652 1.58297 -0.005025 0.391413</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_2_clone_1_clone_2_clone_0'>
+      <pose frame=''>5.2891 -4.46441 -0.181652 1.58297 -0.005025 0.391413</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_4'>
+      <pose frame=''>5.28053 -3.30123 -0.194984 1.58127 0.00799 -0.651597</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_4_clone'>
+      <pose frame=''>5.1701 -1.60038 -0.193772 1.57445 0.012657 -1.28985</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_4_clone_0'>
+      <pose frame=''>4.73891 -0.046838 -0.193772 1.57445 0.012657 -1.28985</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_4_clone_0_clone'>
+      <pose frame=''>5.07471 1.59835 -0.193599 1.57003 0.013152 -1.62882</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <model name='chain_link_fence_clone_1_clone_4_clone_0_clone_0'>
+      <pose frame=''>5.14688 2.96364 -0.195484 1.57003 0.013152 -1.62882</pose>
+      <static>1</static>
+      <link name='multi_isle_shed_link'>
+        <visual name='visual'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+        </visual>
+        <collision name='collision'>
+          <geometry>
+            <mesh>
+              <uri>model://chain_link_fence/meshes/fence.dae</uri>
+              <scale>10 10 10</scale>
+            </mesh>
+          </geometry>
+          <max_contacts>10</max_contacts>
+          <surface>
+            <contact>
+              <ode/>
+            </contact>
+            <bounce/>
+            <friction>
+              <torsional>
+                <ode/>
+              </torsional>
+              <ode/>
+            </friction>
+          </surface>
+        </collision>
+        <self_collide>0</self_collide>
+        <enable_wind>0</enable_wind>
+        <kinematic>0</kinematic>
+      </link>
+    </model>
+    <state world_name='__default__'>
+   <!--   <sim_time>1535 588000000</sim_time>
+      <real_time>1552 292826759</real_time>
+      <wall_time>1607948259 801644013</wall_time>
+      <iterations>1535588</iterations> -->
+      <model name='chain_link_fence'>
+        <pose frame=''>0.640633 3.18926 -0.2 1.58397 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>0.640633 3.18926 -0.2 1.58397 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone'>
+        <pose frame=''>2.21873 3.19536 -0.2 1.58397 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>2.21873 3.19536 -0.2 1.58397 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_0'>
+        <pose frame=''>3.79678 3.18232 -0.2 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>3.79678 3.18232 -0.2 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1'>
+        <pose frame=''>-0.775304 3.66975 -0.194984 1.58127 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-0.775304 3.66975 -0.194984 1.58127 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone'>
+        <pose frame=''>-2.03848 4.6929 -0.194984 0 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-2.03848 4.6929 -0.194984 0 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_0'>
+        <pose frame=''>-3.27871 5.66334 -0.194984 1.58127 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-3.27871 5.66334 -0.194984 1.58127 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1'>
+        <pose frame=''>-4.52909 6.61506 -0.194984 0 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-4.52909 6.61506 -0.194984 0 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1_clone'>
+        <pose frame=''>-13.6962 -3.83531 -0.194984 1.58127 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-13.6962 -3.83531 -0.194984 1.58127 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1_clone_0'>
+        <pose frame=''>-12.458 -4.79404 -0.194391 1.58127 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-12.458 -4.79404 -0.194391 1.58127 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1_clone_1'>
+        <pose frame=''>-11.2035 -5.72649 -0.194984 0 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-11.2035 -5.72649 -0.194984 0 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1_clone_2'>
+        <pose frame=''>-9.95513 -6.67677 -0.194984 1.58127 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-9.95513 -6.67677 -0.194984 1.58127 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1_clone_3'>
+        <pose frame=''>-8.69953 -7.60365 -0.194984 1.58127 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-8.69953 -7.60365 -0.194984 1.58127 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1_clone_4'>
+        <pose frame=''>-7.44005 -8.53928 -0.194984 0 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-7.44005 -8.53928 -0.194984 0 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1_clone_5'>
+        <pose frame=''>-6.1814 -9.47272 -0.194984 1.58127 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-6.1814 -9.47272 -0.194984 1.58127 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1_clone_6'>
+        <pose frame=''>-2.60007 -2.62731 -0.194984 0 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-2.60007 -2.62731 -0.194984 0 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1_clone_7'>
+        <pose frame=''>-1.35833 -3.58358 -0.194984 1.58127 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-1.35833 -3.58358 -0.194984 1.58127 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1_clone_8'>
+        <pose frame=''>-0.143645 -4.54802 -0.194984 1.58127 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-0.143645 -4.54802 -0.194984 1.58127 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_1_clone_9'>
+        <pose frame=''>1.11729 -5.51546 -0.194984 0 0.00799 -0.651597</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>1.11729 -5.51546 -0.194984 0 0.00799 -0.651597</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_2'>
+        <pose frame=''>-5.71538 6.72276 -0.179014 1.58044 -0.008973 0.749388</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-5.71538 6.72276 -0.179014 1.58044 -0.008973 0.749388</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_2_clone'>
+        <pose frame=''>-6.86376 5.63047 -0.179014 1.58044 -0.008973 0.749388</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-6.86376 5.63047 -0.179014 1.58044 -0.008973 0.749388</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_2_clone_0'>
+        <pose frame=''>-8.01548 4.56094 -0.179014 1.58044 -0.008973 0.749388</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-8.01548 4.56094 -0.179014 1.58044 -0.008973 0.749388</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_2_clone_1'>
+        <pose frame=''>-9.16904 3.49605 -0.179014 1.58044 -0.008973 0.749388</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-9.16904 3.49605 -0.179014 1.58044 -0.008973 0.749388</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_2_clone_1_clone'>
+        <pose frame=''>-4.92581 -9.35592 -0.179014 1.58044 -0.008973 0.749388</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-4.92581 -9.35592 -0.179014 1.58044 -0.008973 0.749388</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_2_clone_1_clone_0'>
+        <pose frame=''>-3.75767 -8.29006 -0.179014 1.58044 -0.008973 0.749388</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-3.75767 -8.29006 -0.179014 1.58044 -0.008973 0.749388</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_2_clone_1_clone_1'>
+        <pose frame=''>-2.60319 -7.20289 -0.179014 1.58044 -0.008973 0.749388</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-2.60319 -7.20289 -0.179014 1.58044 -0.008973 0.749388</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_2_clone_1_clone_2'>
+        <pose frame=''>2.43792 -5.67964 -0.181652 1.58297 -0.005025 0.391413</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>2.43792 -5.67964 -0.181652 1.58297 -0.005025 0.391413</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_2_clone_1_clone_2_clone'>
+        <pose frame=''>3.86987 -5.0862 -0.181652 1.58297 -0.005025 0.391413</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>3.86987 -5.0862 -0.181652 1.58297 -0.005025 0.391413</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_2_clone_1_clone_2_clone_0'>
+        <pose frame=''>5.19226 -4.33374 -0.179931 1.58138 -0.007841 0.637686</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>5.19226 -4.33374 -0.179931 1.58138 -0.007841 0.637686</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_3'>
+        <pose frame=''>-2.24688 -6.0673 -0.194338 1.57464 0.012602 -1.27502</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-2.24688 -6.0673 -0.194338 1.57464 0.012602 -1.27502</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_3_clone'>
+        <pose frame=''>-2.70947 -4.56902 -0.194338 0 0.012602 -1.27502</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-2.70947 -4.56902 -0.194338 0 0.012602 -1.27502</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_3_clone_0'>
+        <pose frame=''>-3.181 -3.06382 -0.194338 1.57464 0.012602 -1.27502</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-3.181 -3.06382 -0.194338 1.57464 0.012602 -1.27502</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_4'>
+        <pose frame=''>5.59945 -3.20921 -0.193772 1.57445 0.012657 -1.28985</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>5.59945 -3.20921 -0.193772 1.57445 0.012657 -1.28985</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_4_clone'>
+        <pose frame=''>5.19472 -1.68571 -0.194896 1.57445 0.012657 -1.28985</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>5.19472 -1.68571 -0.194896 1.57445 0.012657 -1.28985</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_4_clone_0'>
+        <pose frame=''>5.00776 -0.160825 -0.195484 1.57003 0.013152 -1.62882</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>5.00776 -0.160825 -0.195484 1.57003 0.013152 -1.62882</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_4_clone_0_clone'>
+        <pose frame=''>5.06378 1.41026 -0.196077 1.57003 0.013152 -1.62882</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>5.06378 1.41026 -0.196077 1.57003 0.013152 -1.62882</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_1_clone_4_clone_0_clone_0'>
+        <pose frame=''>4.81541 2.73422 -0.198506 1.57694 0.011652 -1.08515</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>4.81541 2.73422 -0.198506 1.57694 0.011652 -1.08515</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_2'>
+        <pose frame=''>-10.5233 2.97944 -0.2 1.58397 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-10.5233 2.97944 -0.2 1.58397 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_3'>
+        <pose frame=''>-12.0875 2.97553 -0.2 0 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-12.0875 2.97553 -0.2 0 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_4'>
+        <pose frame=''>-13.653 2.9686 -0.2 1.58397 -0 0</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-13.653 2.9686 -0.2 1.58397 -0 0</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_4_clone'>
+        <pose frame=''>-14.4119 2.18147 -0.188303 1.58397 -0.013173 1.56028</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-14.4119 2.18147 -0.188303 1.58397 -0.013173 1.56028</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_4_clone_clone'>
+        <pose frame=''>-14.4146 0.610505 -0.188027 1.57093 -0.013173 1.56028</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-14.4146 0.610505 -0.188027 1.57093 -0.013173 1.56028</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_4_clone_clone_0'>
+        <pose frame=''>-14.378 -0.959511 -0.188303 1.57093 -0.013173 1.56028</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-14.378 -0.959511 -0.188303 1.57093 -0.013173 1.56028</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+      <model name='chain_link_fence_clone_4_clone_clone_1'>
+        <pose frame=''>-14.3579 -2.51713 -0.188303 0 -0.013173 1.56028</pose>
+        <scale>1 1 1</scale>
+        <link name='multi_isle_shed_link'>
+          <pose frame=''>-14.3579 -2.51713 -0.188303 0 -0.013173 1.56028</pose>
+          <velocity>0 0 0 0 -0 0</velocity>
+          <acceleration>0 0 0 0 -0 0</acceleration>
+          <wrench>0 0 0 0 -0 0</wrench>
+        </link>
+      </model>
+    </state>
+    <gui fullscreen='0'>
+      <camera name='user_camera'>
+        <pose frame=''>-14.9944 11.8804 17.6138 0 0.873793 -0.891046</pose>
+        <view_controller>orbit</view_controller>
+        <projection_type>perspective</projection_type>
+      </camera>
+    </gui>
+  </world>
+</sdf>
