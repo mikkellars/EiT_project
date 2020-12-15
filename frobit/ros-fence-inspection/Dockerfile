@@ -29,11 +29,9 @@ RUN echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" |
 RUN apt-get update
 RUN apt-get install -y python3-pycoral
 
-
 # ARMv7 PLATFORM Tensorflow lite runtime
 RUN pip3 install https://github.com/google-coral/pycoral/releases/download/release-frogfish/tflite_runtime-2.5.0-cp36-cp36m-linux_armv7l.whl
 RUN pip3 install https://github.com/google-coral/pycoral/releases/download/release-frogfish/pycoral-1.0.0-cp36-cp36m-linux_armv7l.whl
-
 
 # x86 PLATFORM Tensorflow lite runtime
 # RUN pip3 install https://github.com/google-coral/pycoral/releases/download/release-frogfish/tflite_runtime-2.5.0-cp36-cp36m-linux_x86_64.whl 
