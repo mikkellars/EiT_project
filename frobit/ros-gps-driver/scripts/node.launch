@@ -1,6 +1,0 @@
-<launch>
-   <node name="nmea_navsat_driver" pkg="nmea_navsat_driver" type="nmea_navsat_driver">
-      <param name="_port" value="/dev/ttyUSB0"/>
-   </node>
-</launch>
-

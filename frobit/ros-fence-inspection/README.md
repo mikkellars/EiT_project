@@ -1,2 +1,0 @@
-# Running the docker after build
-docker run --cpuset-cpus 0 --network host --name ros-fence-inspection --privileged -v /dev/bus/usb:/dev/bus/usb --mount type=bind,source="$(pwd)"/assets,target=/assets --rm -it ros-fence-inspection

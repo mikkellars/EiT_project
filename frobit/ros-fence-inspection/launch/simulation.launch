@@ -1,5 +1,0 @@
-<launch>
-    <node name="detection" pkg="detection" type="detection" output="screen" clear_params="true">
-        <param name="use_tpu" value="True" />
-    </node>
-</launch>
