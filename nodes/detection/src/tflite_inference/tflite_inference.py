@@ -30,7 +30,8 @@ class tfliteInference:
         # Image attributes
         self.bridge = CvBridge()
         self.img = None
-        self.img_num = 0
+        self.img_num_det = 0
+        self.img_num_raw = 0
 
         if simulate:
             print('Running on simulator')
@@ -143,12 +144,16 @@ class tfliteInference:
         # Running inference
         boxes, classes, scores, num_detections = self.__inference(image_resized)
         
-        # Drawing boxes
-       # if num_detections > 0:
-        image = self.__draw_results(image_np, boxes, scores)
-        # Saving image
-        cv2.imwrite(f'../images/img_{self.img_num:03d}.png', image)
-        print(f'Found hole number: {self.img_num}')
-        self.img_num += 1
+        # Saving image for detection
+        if num_detections > 0:
+            image = self.__draw_results(image_np, boxes, scores)
+            cv2.imwrite(f'/assets/images/detection/{self.img_num_raw:04d}.png', image) # save at the same num as raw data, as it is easy to merge them together
+            print(f'Found hole number: {self.img_num_det}')
+            self.img_num_det += 1
+
+        # Saving raw image
+        cv2.imwrite(f'/assets/images/raw/{self.img_num_raw:04d}.png', image_np)
+
+        self.img_num_raw += 1
 
 

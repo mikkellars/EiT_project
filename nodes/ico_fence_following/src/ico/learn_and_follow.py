@@ -3,6 +3,7 @@
 import rospy
 import random
 from ico.ico import ICO
+from ico.datalogger import DataLogger
 from dist_ransac.msg import Polar_dist
 from std_msgs.msg import Float64
 
@@ -19,6 +20,11 @@ class LearnFollow():
         self.left_obs_ico = ICO(lr=0.1, weight_predic = weight_init)
         self.right_obs_ico = ICO(lr=0.1, weight_predic = weight_init) 
         self.ico = ICO(lr=0.1, weight_predic = weight_init) 
+
+        # Init ICO loggers
+        self.log_ico     = DataLogger('/assets/ico_logs/ico.txt')
+        self.log_ico_col = DataLogger('/assets/ico_logs/ico_col.txt')
+        self.log_idx = 0
 
         # Publisher to motors
         self.publisher_left = rospy.Publisher(self.pub_name_left, Float64, queue_size=1)
@@ -41,31 +47,6 @@ class LearnFollow():
 
     def __callback(self, msg):
         cur_dist = msg.dist
-
-        # # Run and learning
-        # reflex, predictive = self.__detect_relfex(cur_dist)
-
-        # left_mc_val = self.left_obs_ico.run_and_learn(1 if reflex == 1 else 0, predictive)
-        # right_mc_val = self.right_obs_ico.run_and_learn(1 if reflex == -1 else 0, predictive)
-        
-        # right_mc_val *= 50
-        # left_mc_val *= 50
-
-        # if reflex == -1:
-        #     self.publisher_right.publish(20)
-        #     self.publisher_left.publish(0)
-
-        #     print('Learning right with right val: ', left_mc_val, "Error: ", predictive)
-        # elif reflex == 1:
-        #     self.publisher_right.publish(0)
-        #     self.publisher_left.publish(20)
-        #     print('Learning left with left val: ', right_mc_val, "Error: ", predictive)
-        # else:
-        #     # Publish to PWM values
-        #     self.publisher_right.publish(right_mc_val)
-        #     self.publisher_left.publish(left_mc_val)
-
-        # print("Left val",left_mc_val, "Right val",right_mc_val)
 
         # Run and learning
         reflex, predictive = self.__detect_relfex(cur_dist)
@@ -96,7 +77,14 @@ class LearnFollow():
             self.publisher_right.publish(right_mc_val)
             self.publisher_left.publish(left_mc_val) 
 
-        print("Input", predictive, "weight", self.ico.weight_predic, "output", mc_val, "left_mc", left_mc_val, "right_mc", right_mc_val)
+        # print("Input", predictive, "weight", self.ico.weight_predic, "output", mc_val, "left_mc", left_mc_val, "right_mc", right_mc_val)
+
+        # Logging data from the ICO
+        self.log_ico.write_data(self.log_idx, [predictive, self.ico.weight_predic, mc_val])
+        self.log_ico_col.write_data(self.log_idx, [reflex])
+        self.log_idx += 1
+
+
     def stop_mc(self):
         self.publisher_right.publish(0)
         self.publisher_left.publish(0)
