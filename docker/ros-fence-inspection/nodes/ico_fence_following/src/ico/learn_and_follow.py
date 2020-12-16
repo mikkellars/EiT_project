@@ -9,16 +9,19 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64
 
 class LearnFollow():
-    def __init__(self, sub_name, pub_name, target_dist, learn_inteval, simulate:bool = False):
+    def __init__(self, sub_name, pub_name, target_dist, learn_inteval, simulate:bool = False, learn_type:str = 'one'):
         self.sub_name = sub_name
         self.simulate = simulate
         self.target_dist = target_dist
         self.learn_inteval = learn_inteval
+        self.learn_type = learn_type
 
         # Init ICO's
         weight_init = random.uniform(0.5, 1.0)
-        self.left_obs_ico = ICO(lr=0.1, weight_predic = weight_init)
-        self.right_obs_ico = ICO(lr=0.1, weight_predic = weight_init) 
+        # Used if two ico learning
+        self.left_ico = ICO(lr=0.1, weight_predic = weight_init, activation_func = 'sigmoid')
+        self.right_ico = ICO(lr=0.1, weight_predic = weight_init, activation_func = 'sigmoid') 
+        # Used if one ico learning
         self.ico = ICO(lr=0.1, weight_predic = weight_init) 
 
         # Init ICO loggers
@@ -52,7 +55,7 @@ class LearnFollow():
 
         return reflex, predictive
 
-    def one_ico_learning(self, reflective, predictive):
+    def one_ico_learning(self, reflective, predictive, sim:bool = True, mc_scaling:float = 1.0):
         """One ico for learning to follow a fence. 
         If it is negative its driving to the right, if its postive it drive to the left.
 
@@ -64,44 +67,49 @@ class LearnFollow():
             [type]: [description]
         """
         # Run and learning
-        mc_val = self.ico.run_and_learn(reflex, predictive)
+        mc_val = self.ico.run_and_learn(reflective, predictive) 
         right_mc_val = 0.15
         left_mc_val = 0.15
 
-        msg = Twist()
-        msg.linear.y = 0
-        msg.linear.z = 0
-
-        msg.angular.x = 0
-        msg.angular.y = 0
-
-        if reflex == -1:
-            lin, ang = self.__convert_to_twist(vel_left = 0.20, vel_right = 0)
-            msg.linear.x = lin
-            msg.angular.z = ang
-        elif reflex == 1:
-            lin, ang = self.__convert_to_twist(vel_left = 0, vel_right = 0.20)
-            msg.linear.x = lin
-            msg.angular.z = ang
+        if reflective == -1:
+            right_mc_val = 0.0
+            if sim:
+                left_mc_val = 0.2
+            else:
+                left_mc_val = 20.0 
+        elif reflective == 1:
+            left_mc_val = 0.0
+            if sim:
+                right_mc_val = 0.2
+            else:
+                right_mc_val = 20.0 
         elif mc_val < 0:
-            # Publish to PWM values
             left_mc_val += mc_val * (-1)
-            lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
-            msg.linear.x = lin
-            msg.angular.z = ang
+            right_mc_val *= mc_scaling
+            left_mc_val *= mc_scaling
         elif mc_val > 0:
             right_mc_val += mc_val
+            right_mc_val *= mc_scaling
+            left_mc_val *= mc_scaling
+
+        if sim:
             lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
+
+            msg = Twist()
             msg.linear.x = lin
+            msg.linear.y = 0
+            msg.linear.z = 0
+
+            msg.angular.x = 0
+            msg.angular.y = 0
             msg.angular.z = ang
+
+            return msg
+
         else:
-            lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
-            msg.linear.x = lin
-            msg.angular.z = ang
+            return right_mc_val, left_mc_val
 
-        return msg
-
-    def two_ico_learning(self, reflective, predictive):
+    def two_ico_learning(self, reflective, predictive, sim:bool = True, mc_scaling:float = 1.0):
         """Two ico's one for each wheel. 
         If the reflective signal is negative the left motor is learning to drive closer to the fence
         If the reflective signal is positive the right motor is learning to drive away from the fence
@@ -114,42 +122,42 @@ class LearnFollow():
             [type]: [description]
         """
         # Run and learning
-        mc_val = self.ico.run_and_learn(reflex, predictive)
-        right_mc_val = 0.15
-        left_mc_val = 0.15
+        left_mc_val = self.left_ico.run_and_learn(1 if reflective is -1 else 0, (-1)*predictive)
+        right_mc_val = self.right_ico.run_and_learn(1 if reflective is 1 else 0, predictive)
 
-        msg = Twist()
-        msg.linear.y = 0
-        msg.linear.z = 0
-
-        msg.angular.x = 0
-        msg.angular.y = 0
-
-        if reflex == -1:
-            lin, ang = self.__convert_to_twist(vel_left = 0.20, vel_right = 0)
-            msg.linear.x = lin
-            msg.angular.z = ang
-        elif reflex == 1:
-            lin, ang = self.__convert_to_twist(vel_left = 0, vel_right = 0.20)
-            msg.linear.x = lin
-            msg.angular.z = ang
-        elif mc_val < 0:
-            # Publish to PWM values
-            left_mc_val += mc_val * (-1)
-            lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
-            msg.linear.x = lin
-            msg.angular.z = ang
-        elif mc_val > 0:
-            right_mc_val += mc_val
-            lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
-            msg.linear.x = lin
-            msg.angular.z = ang
+        if reflective == -1:
+            right_mc_val = 0.0
+            if sim:
+                left_mc_val = 0.2
+            else:
+                left_mc_val = 20.0 
+        elif reflective == 1:
+            left_mc_val = 0.0
+            if sim:
+                right_mc_val = 0.2
+            else:
+                right_mc_val = 20.0 
         else:
-            lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
-            msg.linear.x = lin
-            msg.angular.z = ang
+            right_mc_val *= mc_scaling
+            left_mc_val *= mc_scaling
 
-        return msg
+        if sim:
+            lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
+
+            msg = Twist()
+
+            msg.linear.x = lin
+            msg.linear.y = 0
+            msg.linear.z = 0
+
+            msg.angular.x = 0
+            msg.angular.y = 0
+            msg.angular.z = ang
+            
+            return msg
+
+        else:
+            return right_mc_val, left_mc_val
             
 
     @staticmethod
@@ -162,47 +170,42 @@ class LearnFollow():
 
     def __callback_sim(self, msg):
         cur_dist = msg.dist
+        if cur_dist == float('inf') or cur_dist == -float('inf'):
+            return
+
         # Finding out the reflex and predictive signal
         reflex, predictive = self.__detect_relfex(cur_dist)
 
-        msg = self.one_ico_learning(reflex, predictive)
-        self.publisher_twist.publish(msg)
+        if self.learn_type is 'one':
+            msg = self.one_ico_learning(reflex, predictive)
+        elif self.learn_type is 'two':
+            msg = self.two_ico_learning(reflex, predictive)
+        else:
+            ValueError('Learning type only supports one or two')
 
+        self.publisher_twist.publish(msg)
+        print(f"Reflex {reflex}, Input {predictive:0.3f}, weight {self.ico.weight_predic:0.3f}, Lin: {msg.linear.x:0.3f}, Ang: {msg.angular.z:0.3f}")
        # print(f"Lin: {msg.linear.x:0.3f}, Ang: {msg.angular.z:0.3f}")
 
     def __callback(self, msg):
         cur_dist = msg.dist
+        if cur_dist == float('inf') or cur_dist == -float('inf'):
+            return
 
         # Run and learning
         reflex, predictive = self.__detect_relfex(cur_dist)
-        mc_val = self.ico.run_and_learn(reflex, predictive)
-        right_mc_val = 15
-        left_mc_val = 15
 
-        mc_val *= 100
-
-        if reflex == -1:
-            self.publisher_right.publish(0)
-            self.publisher_left.publish(20)
-            # print('Learning right with right val: ', left_mc_val, "Error: ", predictive)
-        elif reflex == 1:
-            self.publisher_right.publish(20)
-            self.publisher_left.publish(0)
-            # print('Learning left with left val: ', right_mc_val, "Error: ", predictive)
-        elif mc_val < 0:
-            # Publish to PWM values
-            left_mc_val += mc_val * (-1)
-            self.publisher_right.publish(right_mc_val)
-            self.publisher_left.publish(left_mc_val)
-        elif mc_val > 0:
-            right_mc_val += mc_val
-            self.publisher_right.publish(right_mc_val)
-            self.publisher_left.publish(left_mc_val)      
+        if self.learn_type is 'one':
+            right_mc_val, left_mc_val = self.one_ico_learning(reflex, predictive, sim=False, mc_scaling=50.0)
+        elif self.learn_type is 'two':
+            right_mc_val, left_mc_val = self.two_ico_learning(reflex, predictive, sim=False, mc_scaling=50.0)
         else:
-            self.publisher_right.publish(right_mc_val)
-            self.publisher_left.publish(left_mc_val) 
+            ValueError('Learning type only supports one or two')
 
-        print(f"Reflex {reflex}, Input {predictive:0.3f}, weight {self.ico.weight_predic:0.3f}, output {mc_val:0.3f}, left_mc {left_mc_val:0.3f}, right_mc {right_mc_val:0.3f}")
+        self.publisher_right.publish(right_mc_val)
+        self.publisher_left.publish(left_mc_val)
+
+        print(f"Reflex {reflex}, Input {predictive:0.3f}, weight {self.ico.weight_predic:0.3f}, left_mc {left_mc_val:0.3f}, right_mc {right_mc_val:0.3f}")
 
         # # Logging data from the ICO
         # self.log_ico.write_data(self.log_idx, [predictive, self.ico.weight_predic, mc_val])
