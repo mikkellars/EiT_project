@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<robot>
+
+<gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <!-- <robotNamespace>/robot</robotNamespace> -->
+      <robotParam>robot_description</robotParam>
+      <controlPeriod>0.001</controlPeriod>
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+      <legacyModeNS>True</legacyModeNS>
+    </plugin>
+  </gazebo>
+<gazebo>
+
+<plugin name="differential_drive_controller" filename="libgazebo_ros_diff_drive.so">
+      <legacyMode>false</legacyMode>
+      <alwaysOn>true</alwaysOn>
+      <updateRate>20</updateRate>
+      <leftJoint>left_wheel_hinge</leftJoint>
+      <rightJoint>right_wheel_hinge</rightJoint>
+      <wheelSeparation>0.14</wheelSeparation>
+      <wheelDiameter>0.1</wheelDiameter>
+      <torque>30</torque>
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometryFrame>odom</odometryFrame>
+      <robotBaseFrame>chassis</robotBaseFrame>
+    </plugin> 
+
+ 
+
+      
+  </gazebo>
+
+    <gazebo reference="left_wheel">
+      <mu1      value="0.9"   />
+      <mu2      value="0.9"   />
+      <minDepth value="0.005" />
+      <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+    <transmission name="left_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="left_wheel_motor">
+        <mechanicalReduction>9</mechanicalReduction>
+      </actuator>
+      <joint name="left_wheel_hinge">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+    </transmission>
+
+    <gazebo reference="right_wheel">
+      <mu1      value="0.9"   />
+      <mu2      value="0.9"   />
+      <minDepth value="0.005" />
+      <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+    <transmission name="right_wheel_trans">
+      <type>transmission_interface/SimpleTransmission</type>
+      <actuator name="right_wheel_motor">
+        <mechanicalReduction>9</mechanicalReduction>
+      </actuator>
+      <joint name="right_wheel_hinge">
+        <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+      </joint>
+    </transmission>
+
+
+
+<!--<gazebo reference="caster_link">
+            <mu1 value="3.0"/>
+            <mu2 value="3.0"/>
+            <kp value="10000000.0" />
+            <kd value="100.0" />
+            <fdir1 value="0 0 1"/>
+            <minDepth value="0.005"/>
+        </gazebo>
+<gazebo reference="left_wheel_hinge">
+  <mu1>3.0</mu1>
+  <mu2>3.0</mu2>
+  <kp>1000000.0</kp> 
+  <kd>100000.0</kd>
+  <minDepth>0.001</minDepth>
+  <maxVel>1.0</maxVel>
+</gazebo>
+<gazebo reference="right_wheel_hinge">
+  <mu1>3.0</mu1>
+  <mu2>3.0</mu2>
+  <kp>1000000.0</kp> 
+  <kd>100000.0</kd>
+  <minDepth>0.001</minDepth>
+  <maxVel>1.0</maxVel>
+</gazebo>-->
+<gazebo reference="laser">
+  <sensor type="ray" name="laser"> <!--gpu_ray-->
+    <pose>0 0 0 0 0 0</pose>
+    <visualize>true</visualize>
+    <update_rate>40</update_rate>
+    <ray>
+      <scan>
+        <horizontal>
+           <samples>720</samples>
+            <resolution>1</resolution>
+            <min_angle>-1.570796</min_angle>
+            <max_angle>1.570796</max_angle>
+        </horizontal>
+      </scan>
+      <range>
+      <min>0.01</min>
+      <max>5</max>
+        <resolution>1</resolution>
+      </range>
+    </ray>
+      <plugin name="gazebo_ros_head_hokuyo_controller" filename="libgazebo_ros_laser.so"> <!--libgazebo_ros_gpu_laser.so-->
+      <topicName>/laser/scan</topicName>
+      <frameName>laser</frameName>
+    </plugin>
+  </sensor>
+</gazebo>
+
+
+
+  <gazebo reference="chassis">
+      <material>Gazebo/Orange</material>
+    </gazebo>
+
+ <gazebo reference="cam_link">
+      <material>Gazebo/DarkGrey</material>
+    </gazebo>
+
+  <!-- camera -->
+  <gazebo reference="cam_link">
+    <sensor type="camera" name="camera1">
+      <update_rate>5.0</update_rate>
+      <camera name="head">
+        <horizontal_fov>1.3962634</horizontal_fov>
+        <image>
+          <width>800</width>
+          <height>800</height>
+          <format>R8G8B8</format>
+        </image>
+        <clip>
+          <near>0.02</near>
+          <far>300</far>
+        </clip>
+        <noise>
+          <type>gaussian</type>
+          <!-- Noise is sampled independently per pixel on each frame.
+               That pixel's noise value is added to each of its color
+               channels, which at that point lie in the range [0,1]. -->
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+      </camera>
+      <plugin name="camera_controller" filename="libgazebo_ros_camera.so">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0.0</updateRate>
+        <cameraName>rrbot/camera1</cameraName>
+        <imageTopicName>image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_info</cameraInfoTopicName>
+        <frameName>cam_link</frameName>
+        <hackBaseline>0.07</hackBaseline>
+        <distortionK1>0.0</distortionK1>
+        <distortionK2>0.0</distortionK2>
+        <distortionK3>0.0</distortionK3>
+        <distortionT1>0.0</distortionT1>
+        <distortionT2>0.0</distortionT2>
+      </plugin>
+    </sensor>
+  </gazebo>
+<!--
+      <gazebo> 
+    <plugin name="gps_controller" filename="libhector_gazebo_ros_gps.so">
+        <alwayson>true</alwayson>
+        <updaterate>1.0</updaterate>
+        <bodyname>gps_link</bodyname>
+        <topicname>/fix</topicname>
+        <velocitytopicname>/fix_velocity</velocitytopicname>
+        <drift>5.0 5.0 5.0</drift>
+        <gaussiannoise>0.1 0.1 0.1</gaussiannoise>
+        <velocitydrift>0 0 0</velocitydrift>
+        <velocitygaussiannoise>0.1 0.1 0.1</velocitygaussiannoise>
+    </plugin>
+  </gazebo> 
+  -->
+</robot>
