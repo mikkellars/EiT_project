@@ -129,12 +129,29 @@ class tfliteInference:
         image_np = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
 
         image_resized = cv2.resize(image_np, (self.width, self.height))
+
+        # Saving raw image
+        cv2.imwrite(f'/assets/images/raw/{self.img_num_raw:04d}.jpg', image_np)
+
         # Running inference
         boxes, classes, scores, num_detections = self.__inference(image_resized)
         
-        image_np = self.__draw_results(image_np, boxes, scores)
-        cv2.imshow("Image window", image_np)
-        cv2.waitKey(3)
+        # Saving image for detection
+        if num_detections > 0 and np.any(scores > 0.5) and np.any(scores <= 1.0):
+            image = self.__draw_results(image_np, boxes, scores)
+            cv2.imwrite(f'/assets/images/detection/{self.img_num_raw:04d}.jpg', image) # save at the same num as raw data, as it is easy to merge them together
+            print(f'Found hole number: {self.img_num_det}')
+            self.img_num_det += 1
+
+        self.img_num_raw += 1
+
+
+        # # Running inference
+        # boxes, classes, scores, num_detections = self.__inference(image_resized)
+        
+        # image_np = self.__draw_results(image_np, boxes, scores)
+        # cv2.imshow("Image window", image_np)
+        # cv2.waitKey(3)
 
     def callback(self, Image):
         np_arr = np.fromstring(Image.data, np.uint8)
@@ -145,15 +162,15 @@ class tfliteInference:
         image_resized = cv2.resize(image_np, (self.width, self.height))
 
         # Saving raw image
-        cv2.imwrite(f'/assets/images/raw/{self.img_num_raw:04d}.png', image_np)
+        cv2.imwrite(f'/assets/images/raw/{self.img_num_raw:04d}.jpg', image_np)
 
         # Running inference
         boxes, classes, scores, num_detections = self.__inference(image_resized)
         
         # Saving image for detection
-        if num_detections > 0:
+        if num_detections > 0 and np.any(scores > 0.5) and np.any(scores <= 1.0):
             image = self.__draw_results(image_np, boxes, scores)
-            cv2.imwrite(f'/assets/images/detection/{self.img_num_raw:04d}.png', image) # save at the same num as raw data, as it is easy to merge them together
+            cv2.imwrite(f'/assets/images/detection/{self.img_num_raw:04d}.jpg', image) # save at the same num as raw data, as it is easy to merge them together
             print(f'Found hole number: {self.img_num_det}')
             self.img_num_det += 1
 

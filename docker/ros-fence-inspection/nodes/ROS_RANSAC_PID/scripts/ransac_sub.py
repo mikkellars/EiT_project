@@ -10,7 +10,7 @@ import math
 
 MIN_RANGE = 0.4             #Meters
 MAX_RANGE = 5.6             #Meters
-RATE = 10                   #Hz
+RATE = 50                   #Hz
 MIN_INLIERS = 10            #Observations
 RESIDUAL_THRESHOLD = 0.1    #Meters
 MAX_FAILS = 1               #Nr of times RANSAC may fail before we give up
@@ -20,7 +20,7 @@ CRITICAL_DIST = 0.6         #Meters, distance before prioritizing left lines
 class RANSAC_subscriber():
     def __init__(self):
         rospy.init_node("ransac_wall_dist_pub", anonymous=True)
-        topic = '/scan' # "/laser/scan" # for simulation
+        topic = '/laser/scan' # "/laser/scan" # for simulation
         self.subscription = rospy.Subscriber(topic, LaserScan, self.RANSAC, queue_size=1)
         print('starting RANSAC node')
         self.publisher = rospy.Publisher("laser/dist_to_wall", Polar_dist, queue_size=1)
@@ -186,16 +186,16 @@ class RANSAC_subscriber():
         rmsg.dist = min_dist
         rmsg.angle = min_angle
         self.publisher.publish(rmsg)
-        cv.putText(self.image, f'Dist: {rmsg.dist:0.4f}, Angle: {np.rad2deg(rmsg.angle):0.4f}', (10,50), cv.FONT_HERSHEY_SIMPLEX, 2, (255,255,255))
+        # cv.putText(self.image, f'Dist: {rmsg.dist:0.4f}, Angle: {np.rad2deg(rmsg.angle):0.4f}', (10,50), cv.FONT_HERSHEY_SIMPLEX, 2, (255,255,255))
 
-        cx = np.int(np.round(self.image.shape[0]/2 + self.drawScale * min_dist_point[0]))
-        cy = np.int(np.round(self.image.shape[1]/2 - self.drawScale * min_dist_point[1]))
+        # cx = np.int(np.round(self.image.shape[0]/2 + self.drawScale * min_dist_point[0]))
+        # cy = np.int(np.round(self.image.shape[1]/2 - self.drawScale * min_dist_point[1]))
 
-        cv.circle(self.image, (cx,cy), 0, (255, 255, 255), thickness=3)
+        # cv.circle(self.image, (cx,cy), 0, (255, 255, 255), thickness=3)
 
-        cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.png', self.image)
-        print(f'Writing image: {self.num}')
-        self.num += 1
+        # cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.png', self.image)
+        # print(f'Writing image: {self.num}')
+        # self.num += 1
        # print(f'Took { time.time() - start_time:0.3f} s')
         #cv.imshow('image', self.image)
         #cv.waitKey(1)
