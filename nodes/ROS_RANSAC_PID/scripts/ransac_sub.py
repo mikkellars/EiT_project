@@ -22,6 +22,10 @@ def nearest_point_on_line(line_start, line_end, point=np.array((0,0))):
     a_to_b = line_end - line_start
 
     a_to_b_magnitude = np.linalg.norm(a_to_b)
+
+    if (a_to_b_magnitude == 0):
+        return line_start
+
     a_to_b_unit = a_to_b/a_to_b_magnitude
 
     a_to_p_scaled = a_to_p * (1.0 / a_to_b_magnitude)
