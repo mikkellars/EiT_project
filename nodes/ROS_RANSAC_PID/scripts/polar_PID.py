@@ -16,24 +16,24 @@ class polar_PID():
     def __init__(self):
         print("STARTING POLAR PID NODE")
     
-        topic_out = "/velocity_controller/cmd_vel" #"/frobit/twist"
-        
+        topic_out = ""
         simulate = rospy.get_param('~simulate', True)
-        if simulate:
-            self.P = 00.33
-            self.I = 0
-            self.D = 0
-            self.ang_vel_max = 0.01
-            self.vel = 0.1
-
-
         if not simulate:
+            self.P = 0.01
+            self.I = 0.01
+            self.D = 0.01
+            self.ang_vel_max = 0.04
+            self.vel = 0.4
+            topic_out = "/frobit/twist"
+
+        if simulate:
             self.P = 4
             self.I = 0
             self.D = 0
             self.ang_vel_max = 2
             self.vel = 0.2
-            topic_out = "/frobit/twist"
+            topic_out = "/velocity_controller/cmd_vel"
+        
 
         rospy.init_node("wall_distance_PID_controller", anonymous=False)
         topic_in = "laser/dist_to_wall"

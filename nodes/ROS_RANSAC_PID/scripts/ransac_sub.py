@@ -46,10 +46,10 @@ def add_noise(points, n):
 
 class RANSAC_subscriber():
     def __init__(self):
-        simulate = rospy.get_param('~simulate', True)
+        self.simulate = rospy.get_param('~simulate', True)
         s_topic = "/laser/scan" 
         p_topic = "laser/dist_to_wall"
-        if not simulate:
+        if not self.simulate:
             s_topic = "/scan"
 
         rospy.init_node("ransac_wall_dist_pub", anonymous=True)
@@ -167,19 +167,6 @@ class RANSAC_subscriber():
         min_dist_point = np.array([0, 0])
         min_angle = np.inf
 
-        # for points in fit_sets:
-        #     for p in points:
-        #         dist = np.sqrt(p[0]**2 + p[1]**2)
-        #         angle = math.atan2(p[1], p[0])
-        #         if dist <= CRITICAL_DIST:
-        #             min_dist = dist
-        #             min_dist_point = p
-        #             min_angle = angle
-        #         elif dist < min_dist and angle <= 0: # Negative angle then right for robot
-        #             min_dist = dist
-        #             min_dist_point = p
-        #             min_angle = angle
-
         # POINT ON LINE METHOD
         for model in fit_models:    
             #find nearest point on the line, relative to the robot
@@ -195,6 +182,10 @@ class RANSAC_subscriber():
                     min_dist = dist
                     min_dist_point = point
 
+        #if we dont find anything, dont publish
+        if min_dist == np.inf:
+            return
+
         min_angle = math.atan2(min_dist_point[1], min_dist_point[0])
 
         rmsg = Polar_dist()
@@ -208,13 +199,18 @@ class RANSAC_subscriber():
 
         cv.circle(self.image, (cx,cy), 0, (255, 255, 255), thickness=3)
 
-        if (self.num % 10 == 0):
-            cv.imwrite(f'/home/jousager/Pictures/scan/scan_{self.num//10:03d}.jpg', self.image)
-            print(f'Writing image: {self.num // 10}')
+        if self.simulate:
+            if (self.num % 10 == 0):
+                cv.imwrite(f'/media/scan/scan_{self.num//10:03d}.jpg', self.image)
+                print(f'Writing image: {self.num // 10}')
+
+        elif not self.simulate:
+            cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.png', self.image)
+            print(f'Writing image: {self.num}')
+
         self.num += 1
        # print(f'Took { time.time() - start_time:0.3f} s')
-        #cv.imshow('image', self.image)
-        #cv.waitKey(1)
+
 
     def draw_points(self, points):
         for point in points:
