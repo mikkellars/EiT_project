@@ -1,13 +1,5 @@
-/gazebo_ros_control:   
- pid_gains:
-  left_wheel_hinge:
-    p: 0.0
-    i: 0.000 
-    d: 0.0
-  right_wheel_hinge:
-    p: 0.0
-    i: 0.000
-    d: 0.0
-
+source_list:
+  - /joint_states
+rate: 50
 
 
