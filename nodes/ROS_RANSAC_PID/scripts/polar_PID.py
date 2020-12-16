@@ -5,6 +5,7 @@ import rospy
 import cv2 as cv
 import geometry_msgs
 from geometry_msgs.msg import TwistStamped
+from geometry_msgs.msg import Twist
 from dist_ransac.msg import Polar_dist
 import matplotlib.pyplot as plt
 from time import time
@@ -17,28 +18,30 @@ class polar_PID():
         print("STARTING POLAR PID NODE")
     
         topic_out = ""
-        simulate = rospy.get_param('~simulate', True)
-        if not simulate:
+        self.simulate = rospy.get_param('~simulate', True)
+        if not self.simulate:
             self.P = 0.01
             self.I = 0.01
             self.D = 0.01
             self.ang_vel_max = 0.04
             self.vel = 0.4
             topic_out = "/frobit/twist"
+            self.msgType = TwistStamped
 
-        if simulate:
-            self.P = 4
-            self.I = 0
+        if self.simulate:
+            self.P = 5
+            self.I = 0.2
             self.D = 0
-            self.ang_vel_max = 2
-            self.vel = 0.2
-            topic_out = "/velocity_controller/cmd_vel"
+            self.ang_vel_max = 8
+            self.vel = 0.5
+            topic_out = "/cmd_vel"
+            self.msgType = Twist
         
 
         rospy.init_node("wall_distance_PID_controller", anonymous=False)
         topic_in = "laser/dist_to_wall"
         self.subscription = rospy.Subscriber(topic_in, Polar_dist, self.PID)
-        self.publisher = rospy.Publisher(topic_out, TwistStamped, queue_size=1)
+        self.publisher = rospy.Publisher(topic_out, self.msgType, queue_size=1)
         self.rate = RATE
         rospy.Rate(self.rate)  # or whatever
         self.last_err = 0
@@ -50,7 +53,8 @@ class polar_PID():
         self.time = time()
         #self.showgraph = 1000
 
-        self.print_num = 0
+        self.num = 0
+
 
     def PID(self, msg):
         dist = msg.dist
@@ -64,18 +68,19 @@ class polar_PID():
                 return "left"
             return "right"
 
+        # update error terms
         dist_diff = TARGET_DIST - dist
-        if right_or_left(angle) == "left":  #account for differnece in direction
-            dist_diff = (-dist_diff)
-
+        #if angle > 0: 
+        #    dist_diff = (-dist_diff)
         self.integral_err += dist_diff * time_diff
-
         dist_deriv = (dist_diff - self.last_err) / time_diff
 
+        # calculate control value
         ctrl = self.P * dist_diff
         ctrl += self.I * self.integral_err * 1.0/self.rate
         ctrl += self.D * dist_deriv
 
+        # limit to max/min values
         if ctrl > self.ang_vel_max:
             ctrl = self.ang_vel_max
         elif ctrl < -self.ang_vel_max:
@@ -83,34 +88,43 @@ class polar_PID():
 
         self.last_err = dist_diff
 
-        rmsg = TwistStamped()
-        rmsg.twist.linear.x = self.vel
-        # rmsg.linear.y = 0
-        # rmsg.linear.z = 0
+        #skip sending on the first iteration
+        if self.num == 0:
+            self.num += 1
+            return
 
-        # rmsg.angular.x = 0
-        # rmsg.angular.y = 0
-        rmsg.twist.angular.z = ctrl
-        rmsg.header.stamp = rospy.Time.now()
+        #make and send the message
+        if self.simulate:
+            rmsg = Twist()
+            rmsg.linear.x = self.vel
+            rmsg.angular.z = ctrl
+            self.publisher.publish(rmsg)
 
-        self.publisher.publish(rmsg)
+        if not self.simulate:
+            rmsg = TwistStamped()
+            rmsg.twist.linear.x = self.vel
+            rmsg.twist.angular.z = ctrl
+            rmsg.header.stamp = rospy.Time.now()
+            self.publisher.publish(rmsg)
 
         self.dists.append(dist_diff)
         self.times.append(self.time)
 
-        if self.print_num % 10 == 0:
+        #print 
+        if self.num % 10 == 0:
             print("In:", dist_diff, "    out:", ctrl)
-        self.print_num += 1
+        self.num += 1
         # if self.time > self.showgraph:
         #     self.showgraph += 1000
         #     plt.plot(self.times, self.dists)
         #     plt.show()
-
+        if self.simulation and self.num % 1000 == 0:
+            with open('/media/PID_results/err.npy', 'wb') as f:
+               np.save(f, self.dist_diff, allow_pickle=True, fix_imports=True)[source]
 
 def main(args=None):
     PID_node = polar_PID()
     rospy.spin()
-
 
 if __name__ == '__main__':
     main()

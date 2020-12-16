@@ -46,9 +46,61 @@ def nearest_point_on_line(line_start, line_end, point=np.array((0,0))):
 def add_noise(points, n):
     return np.concatenate((points, (np.random.uniform(low=-msg.range_max, high=msg.range_max, size=(n,2)))))
 
+#split the dataset into clusters naively
+def naive_clustering(data, cluster_distance):
+    clusters = []
+    cluster_start = 0
+    for i in range(positions.shape[0]):
+        if i == positions.shape[0] - 1:
+            clusters.append(positions[cluster_start:])
+            break
+        if np.linalg.norm(positions[i] - positions[i+1]) > self.max_cluster_dist:
+            #if the new cluster has only the point i, add that point as a singleton cluster
+            if i == cluster_start:
+                clusters.append(np.expand_dims(positions[i], axis=0))
+                cluster_start += 1
+            #otherwise, end the cluster normally
+            else:
+                clusters.append(positions[cluster_start:i])
+                cluster_start = i
+
+    if clusters == []:
+        clusters = np.array([positions])
+    else:
+        clusters = np.array(clusters, dtype=object)
+
+    #merge clusters that are close to each other
+    #times = time.time()
+
+def naive_merge_cluster(clusters):
+    i = 0
+    while (i < len(clusters)):
+        j = i + 1
+        while (j < len(clusters)):
+            last = clusters[i][-1]
+            first = clusters[j][0]
+            if np.linalg.norm(first-last) < self.max_cluster_dist:
+                try:
+                    clusters[i] = np.concatenate((clusters[i], clusters[j]), axis=0)
+                    clusters = np.delete(clusters, j)
+                    j -= 1
+                except:
+                    print("Strange concatenation error:")
+                    print("shapes:", clusters[i].shape, clusters[j].shape)
+                    print("points:", clusters[i], clusters[j])
+            j+= 1
+        i += 1
+    return clusters
 
 class RANSAC_subscriber():
     def __init__(self):
+
+
+        a = np.array([1,2])
+        for b in a:
+            a = np.concatenate(a, a)
+            print(a.shape)
+
         self.simulate = rospy.get_param('~simulate', True)
         s_topic = "/laser/scan" 
         p_topic = "laser/dist_to_wall"
@@ -70,8 +122,6 @@ class RANSAC_subscriber():
         self.image = np.array([0])
         self.drawScale = 125
         self.num = 0
-
-
 
     def RANSAC(self, msg):
        # start_time = time.time()
@@ -100,49 +150,7 @@ class RANSAC_subscriber():
                                np.int(np.ceil(self.drawScale*2*msg.range_max)), 3], dtype=np.uint8)
         self.draw_points(positions)
 
-        #split the dataset into clusters naively
-        clusters = []
-        cluster_start = 0
-        for i in range(positions.shape[0]):
-            if i == positions.shape[0] - 1:
-                clusters.append(positions[cluster_start:])
-                break
-            if np.linalg.norm(positions[i] - positions[i+1]) > self.max_cluster_dist:
-                #if the new cluster has only the point i, add that point as a singleton cluster
-                if i == cluster_start:
-                    clusters.append(np.expand_dims(positions[i], axis=0))
-                    cluster_start += 1
-                #otherwise, end the cluster normally
-                else:
-                    clusters.append(positions[cluster_start:i])
-                    cluster_start = i
-
-        if clusters == []:
-            clusters = np.array([positions])
-        else:
-            clusters = np.array(clusters, dtype=object)
-
-        #merge clusters that are close to each other
-        #times = time.time()
-        i = 0
-        while (i < len(clusters)):
-            j = i + 1
-            while (j < len(clusters)):
-                last = clusters[i][-1]
-                first = clusters[j][0]
-                if np.linalg.norm(first-last) < self.max_cluster_dist:
-                    try:
-                        clusters[i] = np.concatenate((clusters[i], clusters[j]), axis=0)
-                        clusters = np.delete(clusters, j)
-                        j -= 1
-                    except:
-                        print("Strange concatenation error:")
-                        print("shapes:", clusters[i].shape, clusters[j].shape)
-                        print("points:", clusters[i], clusters[j])
-                j+= 1
-            i += 1
-        #print("Cluster merging took ", time.time() - times)
-
+        clusters = naive_clustering(positions, self.cluster_distance)
 
         # do a ransac
         fit_sets = []
@@ -164,6 +172,13 @@ class RANSAC_subscriber():
                     fit_sets.append(inlier_points)
                     fit_models.append(np.array([start, end]))
                     points = points[~np.array(inlier_mask)]
+
+                    #split the remaining points again
+                    new_clusters = naive_clustering(points)
+                    if new_clusters.shape[0] > 1
+                        clusters.append(new_clusters)
+                        break
+
                 except:
                     fails += 1
                     if fails >= self.max_fails:
@@ -249,6 +264,7 @@ class RANSAC_subscriber():
             ex = np.int(np.round(self.image.shape[0]/2 + self.drawScale * line[1, 0]))
             ey = np.int(np.round(self.image.shape[0]/2 - self.drawScale * line[1, 1]))
             cv.line(self.image, (sx, sy), (ex, ey), color)
+
 def main(args=None):
     RANSAC_node = RANSAC_subscriber()
     rospy.spin()
