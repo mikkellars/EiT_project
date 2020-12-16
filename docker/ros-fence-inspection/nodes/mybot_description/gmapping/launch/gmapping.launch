@@ -1,0 +1,6 @@
+<launch>
+  <rosparam command="load" file="$(find mybot_gazebo)/gmapping/config/gmapping.yaml" ns="slam_gmapping" />
+  <node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" output="screen">
+  	<remap from="scan" to="/laser/scan" />
+  </node>
+</launch>
