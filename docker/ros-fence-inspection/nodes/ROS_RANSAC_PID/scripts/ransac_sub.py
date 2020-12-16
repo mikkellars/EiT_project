@@ -209,11 +209,11 @@ class RANSAC_subscriber():
 
         if self.simulate:
             if (self.num % 10 == 0):
-                cv.imwrite(f'/media/scan/scan_{self.num//10:03d}.jpg', self.image)
+                cv.imwrite(f'/assets/images/laser_scan/scan_{self.num//10:03d}.jpg', self.image)
                 print(f'Writing image: {self.num // 10}')
 
         elif not self.simulate:
-            cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.png', self.image)
+            cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.jpg', self.image)
             print(f'Writing image: {self.num}')
 
         self.num += 1

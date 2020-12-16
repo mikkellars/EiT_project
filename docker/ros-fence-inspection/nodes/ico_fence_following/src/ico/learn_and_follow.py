@@ -2,9 +2,11 @@
 
 import rospy
 import random
+import numpy as np
 from ico.ico import ICO
 from ico.datalogger import DataLogger
 from dist_ransac.msg import Polar_dist
+from laser_line_extraction.msg import LineSegmentList, LineSegment
 from geometry_msgs.msg import Twist
 from std_msgs.msg import Float64
 
@@ -33,7 +35,8 @@ class LearnFollow():
         if self.simulate:
             self.pub_name = pub_name[0]
             self.publisher_twist = rospy.Publisher(self.pub_name, Twist, queue_size=1)
-            self.subscription = rospy.Subscriber(self.sub_name, Polar_dist, self.__callback_sim, queue_size=1)
+            #self.subscription = rospy.Subscriber(self.sub_name, Polar_dist, self.__callback_sim, queue_size=1)
+            self.subscription = rospy.Subscriber("/line_segments", LineSegmentList, self.__callback_sim, queue_size=1)
         else:
             self.pub_name_left = pub_name[0]
             self.pub_name_right = pub_name[1]
@@ -169,7 +172,18 @@ class LearnFollow():
 
 
     def __callback_sim(self, msg):
-        cur_dist = msg.dist
+
+        # cur_dist = msg.dist
+        # TEST #
+        cur_dist = float('inf')
+        
+        for lineseg in msg.line_segments:
+            point = self.nearest_point_on_line(lineseg.start, lineseg.end)
+            dist = np.linalg.norm(point)
+            if cur_dist > dist:
+                cur_dist = dist
+
+        
         if cur_dist == float('inf') or cur_dist == -float('inf'):
             return
 
@@ -216,3 +230,31 @@ class LearnFollow():
     def stop_mc(self):
         self.publisher_right.publish(0)
         self.publisher_left.publish(0)
+
+    # TEST
+    @staticmethod
+    def nearest_point_on_line(line_start, line_end, point=np.array((0,0))):
+        line_start = np.array(line_start)
+        line_end = np.array(line_end)
+        a_to_p = -line_start
+        a_to_b = line_end - line_start
+
+        a_to_b_magnitude = np.linalg.norm(a_to_b)
+
+        if (a_to_b_magnitude == 0):
+            return line_start
+
+        a_to_b_unit = a_to_b/a_to_b_magnitude
+
+        a_to_p_scaled = a_to_p * (1.0 / a_to_b_magnitude)
+
+        #find how far along the line the point is
+        t = np.dot(a_to_b_unit, a_to_p_scaled)
+        if t < 0.0:
+            t = 0
+        elif t > 1.0:
+            t = 1
+                
+        nearest = a_to_b * t + line_start
+
+        return nearest
