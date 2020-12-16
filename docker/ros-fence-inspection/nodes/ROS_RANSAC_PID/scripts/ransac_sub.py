@@ -131,9 +131,14 @@ class RANSAC_subscriber():
                 last = clusters[i][-1]
                 first = clusters[j][0]
                 if np.linalg.norm(first-last) < self.max_cluster_dist:
-                    clusters[i] = np.concatenate((clusters[i], clusters[j]), axis=0)
-                    clusters = np.delete(clusters, j)
-                    j -= 1
+                    try:
+                        clusters[i] = np.concatenate((clusters[i], clusters[j]), axis=0)
+                        clusters = np.delete(clusters, j)
+                        j -= 1
+                    except:
+                        print("Strange concatenation error:")
+                        print("shapes:", clusters[i].shape, clusters[j].shape)
+                        print("points:", clusters[i], clusters[j])
                 j+= 1
             i += 1
         #print("Cluster merging took ", time.time() - times)
