@@ -11,5 +11,19 @@
     </node>
 
     <node name="dist_ransac_lidar" pkg="dist_ransac" type="ransac_sub.py" output="screen" clear_params="true">
+        <param name="simulate" value="false" />
     </node>
+
+    
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find mybot_description)/urdf/mybot.xacro'"/>
+    
+    <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find mybot_description)/urdf/mybot.xacro'"/>
+  </node>
+
+  <rosparam command="load" file="$(find mybot_gazebo)/gmapping/config/gmapping.yaml" ns="slam_gmapping" />
+  <node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" output="screen">
+  </node>
+  
 </launch>

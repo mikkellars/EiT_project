@@ -52,19 +52,18 @@ class LearnFollow():
 
         return reflex, predictive
 
-    @staticmethod
-    def __convert_to_twist(vel_left, vel_right):
-        wheel_dist = 0.14 # in simulation 
-        vel_lin = (vel_right + vel_left)/2.0 # [m/s]
-        vel_ang = (vel_right - vel_left)/wheel_dist # [rad/s]
-        return (vel_lin, vel_ang)
+    def one_ico_learning(self, reflective, predictive):
+        """One ico for learning to follow a fence. 
+        If it is negative its driving to the right, if its postive it drive to the left.
 
+        Args:
+            reflective ([type]): [description]
+            predictive ([type]): [description]
 
-    def __callback_sim(self, msg):
-        cur_dist = msg.dist
-
+        Returns:
+            [type]: [description]
+        """
         # Run and learning
-        reflex, predictive = self.__detect_relfex(cur_dist)
         mc_val = self.ico.run_and_learn(reflex, predictive)
         right_mc_val = 0.15
         left_mc_val = 0.15
@@ -80,30 +79,94 @@ class LearnFollow():
             lin, ang = self.__convert_to_twist(vel_left = 0.20, vel_right = 0)
             msg.linear.x = lin
             msg.angular.z = ang
-            self.publisher_twist.publish(msg)
         elif reflex == 1:
             lin, ang = self.__convert_to_twist(vel_left = 0, vel_right = 0.20)
             msg.linear.x = lin
             msg.angular.z = ang
-            self.publisher_twist.publish(msg)
         elif mc_val < 0:
             # Publish to PWM values
             left_mc_val += mc_val * (-1)
             lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
             msg.linear.x = lin
             msg.angular.z = ang
-            self.publisher_twist.publish(msg)
         elif mc_val > 0:
             right_mc_val += mc_val
             lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
             msg.linear.x = lin
             msg.angular.z = ang
-            self.publisher_twist.publish(msg)
         else:
             lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
             msg.linear.x = lin
             msg.angular.z = ang
-            self.publisher_twist.publish(msg)
+
+        return msg
+
+    def two_ico_learning(self, reflective, predictive):
+        """Two ico's one for each wheel. 
+        If the reflective signal is negative the left motor is learning to drive closer to the fence
+        If the reflective signal is positive the right motor is learning to drive away from the fence
+
+        Args:
+            reflective ([type]): [description]
+            predictive ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        # Run and learning
+        mc_val = self.ico.run_and_learn(reflex, predictive)
+        right_mc_val = 0.15
+        left_mc_val = 0.15
+
+        msg = Twist()
+        msg.linear.y = 0
+        msg.linear.z = 0
+
+        msg.angular.x = 0
+        msg.angular.y = 0
+
+        if reflex == -1:
+            lin, ang = self.__convert_to_twist(vel_left = 0.20, vel_right = 0)
+            msg.linear.x = lin
+            msg.angular.z = ang
+        elif reflex == 1:
+            lin, ang = self.__convert_to_twist(vel_left = 0, vel_right = 0.20)
+            msg.linear.x = lin
+            msg.angular.z = ang
+        elif mc_val < 0:
+            # Publish to PWM values
+            left_mc_val += mc_val * (-1)
+            lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
+            msg.linear.x = lin
+            msg.angular.z = ang
+        elif mc_val > 0:
+            right_mc_val += mc_val
+            lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
+            msg.linear.x = lin
+            msg.angular.z = ang
+        else:
+            lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
+            msg.linear.x = lin
+            msg.angular.z = ang
+
+        return msg
+            
+
+    @staticmethod
+    def __convert_to_twist(vel_left, vel_right):
+        wheel_dist = 0.14 # in simulation 
+        vel_lin = (vel_right + vel_left)/2.0 # [m/s]
+        vel_ang = (vel_right - vel_left)/wheel_dist # [rad/s]
+        return (vel_lin, vel_ang)
+
+
+    def __callback_sim(self, msg):
+        cur_dist = msg.dist
+        # Finding out the reflex and predictive signal
+        reflex, predictive = self.__detect_relfex(cur_dist)
+
+        msg = self.one_ico_learning(reflex, predictive)
+        self.publisher_twist.publish(msg)
 
        # print(f"Lin: {msg.linear.x:0.3f}, Ang: {msg.angular.z:0.3f}")
 
