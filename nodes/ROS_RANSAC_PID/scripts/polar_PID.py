@@ -9,31 +9,40 @@ from dist_ransac.msg import Polar_dist
 import matplotlib.pyplot as plt
 from time import time
 
-VEL = 0.1
-AV_MAX = 0.01
-TARGET_DIST = 1
-P = 0.0033
-I = 0.0
-D = 0
+TARGET_DIST = 3
 RATE = 50
 
 class polar_PID():
     def __init__(self):
         print("STARTING POLAR PID NODE")
+    
+        topic_out = "/velocity_controller/cmd_vel" #"/frobit/twist"
+        
+        simulate = rospy.get_param('~simulate', True)
+        if simulate:
+            self.P = 00.33
+            self.I = 0
+            self.D = 0
+            self.ang_vel_max = 0.01
+            self.vel = 0.1
+
+
+        if not simulate:
+            self.P = 4
+            self.I = 0
+            self.D = 0
+            self.ang_vel_max = 2
+            self.vel = 0.2
+            topic_out = "/frobit/twist"
+
         rospy.init_node("wall_distance_PID_controller", anonymous=False)
         topic_in = "laser/dist_to_wall"
         self.subscription = rospy.Subscriber(topic_in, Polar_dist, self.PID)
-        topic_out = "/frobit/twist"
         self.publisher = rospy.Publisher(topic_out, TwistStamped, queue_size=1)
         self.rate = RATE
         rospy.Rate(self.rate)  # or whatever
-        self.P = P
-        self.I = I
-        self.D = D
         self.last_err = 0
         self.integral_err = 0
-
-        #add timing
 
         #for recording:
         self.dists = []
@@ -67,15 +76,15 @@ class polar_PID():
         ctrl += self.I * self.integral_err * 1.0/self.rate
         ctrl += self.D * dist_deriv
 
-        if ctrl > AV_MAX:
-            ctrl = AV_MAX
-        elif ctrl < -AV_MAX:
-            ctrl = -AV_MAX
+        if ctrl > self.ang_vel_max:
+            ctrl = self.ang_vel_max
+        elif ctrl < -self.ang_vel_max:
+            ctrl = -self.ang_vel_max
 
         self.last_err = dist_diff
 
         rmsg = TwistStamped()
-        rmsg.twist.linear.x = VEL
+        rmsg.twist.linear.x = self.vel
         # rmsg.linear.y = 0
         # rmsg.linear.z = 0
 
