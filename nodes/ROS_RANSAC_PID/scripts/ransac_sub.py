@@ -16,7 +16,6 @@ RESIDUAL_THRESHOLD = 0.1    #Meters
 MAX_FAILS = 1               #Nr of times RANSAC may fail before we give up
 MAX_CLUSTER_DIST = 0.25     #Meters, distance between points in distinct clusters
 CRITICAL_DIST = 0.6         #Meters, distance before prioritizing left lines
-CLUSTER_TOLERANCE = 5       #Nr of consecutive points outside cluster before cluster ends
 
 def nearest_point_on_line(line_start, line_end, point=np.array((0,0))):
     a_to_p = -line_start
