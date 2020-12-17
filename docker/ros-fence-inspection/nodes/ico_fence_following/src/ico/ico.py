@@ -8,12 +8,13 @@ import math
 
 
 class ICO():
-    def __init__(self, lr:float = 0.1, weight_predic:float = random.uniform(0.0, 0.1)):
+    def __init__(self, lr:float = 0.1, weight_predic:float = random.uniform(0.0, 0.1), activation_func:str = 'tanh'):
         self.weight_reflex = 1.0
         self.weight_predic = weight_predic
         self.x_reflex = 0.0
         self.x_predic = 0.0
         self.lr = lr
+        self.activation_func = activation_func
 
     def run_and_learn(self, x_reflex:float, x_predic:float) -> float:
         """Propagates through the network and updates the weight.
@@ -50,9 +51,13 @@ class ICO():
             y (float): The propagated value
         """
         u = self.weight_reflex * x_reflex + self.weight_predic * x_predic
-      #  y = self.__sigmoid(u)
-        y = math.tanh(u)
-
+        if self.activation_func is 'tanh':
+            y = math.tanh(u)
+        elif self.activation_func is 'sigmoid':
+            y = self.__sigmoid(u)
+        else:
+            ValueError('Argument only support tanh or sigmoid')
+        
         return y
 
     def update_weight(self, x_reflex_new:float):

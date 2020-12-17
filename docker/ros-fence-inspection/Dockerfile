@@ -19,7 +19,8 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get update && apt-get install -y \
 	python3-matplotlib \
-	python3-sklearn 
+	python3-sklearn \
+	libeigen3-dev
 	#python3-pillow
 
 RUN pip3 install --upgrade pip
@@ -43,6 +44,7 @@ RUN pip3 install https://github.com/google-coral/pycoral/releases/download/relea
 COPY nodes/detection /catkin_ws/src/detection
 COPY nodes/ROS_RANSAC_PID /catkin_ws/src/ROS_RANSAC_PID
 COPY nodes/ico_fence_following /catkin_ws/src/ico_fence_following
+COPY nodes/laser_line_extraction /catkin_ws/src/laser_line_extraction
 
 # Copying the launch files
 COPY launch /catkin_ws/src/launch

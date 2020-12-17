@@ -4,3 +4,6 @@
 [submodule "vision/utils/rosbag2video"]
 	path = vision/utils/rosbag2video
 	url = https://github.com/mlaiacker/rosbag2video.git
+[submodule "docker/ros-fence-inspection/nodes/laser_line_extraction"]
+	path = docker/ros-fence-inspection/nodes/laser_line_extraction
+	url = https://github.com/kam3k/laser_line_extraction.git

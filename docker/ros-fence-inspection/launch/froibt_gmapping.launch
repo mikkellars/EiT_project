@@ -1,0 +1,16 @@
+<launch> 
+     <!-- send fake joint values -->
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" respawn="false" output="screen">
+   <rosparam command="load" file="$(find mybot_description)/config/joint_states.yaml" />
+  </node>
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find mybot_description)/urdf/mybot.xacro'"/>
+    
+    <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
+    <param name="robot_description" command="$(find xacro)/xacro.py '$(find mybot_description)/urdf/mybot.xacro'"/>
+  </node>
+
+  <rosparam command="load" file="$(find mybot_description)/gmapping/config/gmapping.yaml" ns="slam_gmapping" />
+  <node name="slam_gmapping" pkg="gmapping" type="slam_gmapping" output="screen">
+  </node>
+</launch>
