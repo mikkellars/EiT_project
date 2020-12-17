@@ -131,9 +131,14 @@ class RANSAC_subscriber():
                 last = clusters[i][-1]
                 first = clusters[j][0]
                 if np.linalg.norm(first-last) < self.max_cluster_dist:
-                    clusters[i] = np.concatenate((clusters[i], clusters[j]), axis=0)
-                    clusters = np.delete(clusters, j)
-                    j -= 1
+                    try:
+                        clusters[i] = np.concatenate((clusters[i], clusters[j]), axis=0)
+                        clusters = np.delete(clusters, j)
+                        j -= 1
+                    except:
+                        print("Strange concatenation error:")
+                        print("shapes:", clusters[i].shape, clusters[j].shape)
+                        print("points:", clusters[i], clusters[j])
                 j+= 1
             i += 1
         #print("Cluster merging took ", time.time() - times)
@@ -204,11 +209,11 @@ class RANSAC_subscriber():
 
         if self.simulate:
             if (self.num % 10 == 0):
-                cv.imwrite(f'/media/scan/scan_{self.num//10:03d}.jpg', self.image)
+                cv.imwrite(f'/assets/images/laser_scan/scan_{self.num//10:03d}.jpg', self.image)
                 print(f'Writing image: {self.num // 10}')
 
         elif not self.simulate:
-            cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.png', self.image)
+            cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.jpg', self.image)
             print(f'Writing image: {self.num}')
 
         self.num += 1

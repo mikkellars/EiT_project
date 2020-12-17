@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 
 import rospy
-from ico.learn_and_follow import *#LearnFollow 
+from ico.learn_and_follow import LearnFollow 
 
 def main():
 
@@ -23,7 +23,7 @@ def main():
     target_dist = 1.0 # Meters
     learn_inteval = 0.2 # Meters: Accepted interval without learning
 
-    learn_follow = LearnFollow(sub_name, pub_name_mc, target_dist, learn_inteval, simulate)
+    learn_follow = LearnFollow(sub_name, pub_name_mc, target_dist, learn_inteval, simulate, learn_type = 'two')
 
     try:
         rospy.spin()
