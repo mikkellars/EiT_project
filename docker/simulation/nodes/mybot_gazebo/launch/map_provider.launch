@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+<!--    Provide the Map   -->
+<arg name="map_file" default="$(find mybot_gazebo)/maps/complicated_2.yaml"/>
+<node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)"/>
+
+<!--   Start Localization   -->
+<include file="$(find amcl)/launch/amcl.launch"/>
+
+<!--  Start Path Planning -->
+<include file="$(find husky_navigation)/launch/move_base.launch"/>
+</launch>
+

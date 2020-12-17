@@ -1,0 +1,14 @@
+material fenceMat/png
+{
+    receive_shadows off
+    technique
+    {
+        pass
+        {
+            texture_unit
+            {
+                texture burnished-metal.png
+            }
+        }
+    }
+}
