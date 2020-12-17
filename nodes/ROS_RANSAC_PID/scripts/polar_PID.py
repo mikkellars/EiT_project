@@ -10,7 +10,7 @@ from dist_ransac.msg import Polar_dist
 import matplotlib.pyplot as plt
 from time import time
 
-TARGET_DIST = 3
+TARGET_DIST = 1
 RATE = 50
 
 class polar_PID():
@@ -29,9 +29,9 @@ class polar_PID():
             self.msgType = TwistStamped
 
         if self.simulate:
-            self.P = 5
-            self.I = 0.2
-            self.D = 0
+            self.P = 12
+            self.I = 0.05
+            self.D = 15
             self.ang_vel_max = 8
             self.vel = 0.5
             topic_out = "/cmd_vel"
@@ -77,8 +77,10 @@ class polar_PID():
 
         # calculate control value
         ctrl = self.P * dist_diff
-        ctrl += self.I * self.integral_err * 1.0/self.rate
+        ctrl += self.I * self.integral_err 
         ctrl += self.D * dist_deriv
+        if self.num % 10 == 0:
+            print(self.P * dist_diff, self.I * self.integral_err, self.D * dist_deriv)
 
         # limit to max/min values
         if ctrl > self.ang_vel_max:
@@ -114,13 +116,9 @@ class polar_PID():
         if self.num % 10 == 0:
             print("In:", dist_diff, "    out:", ctrl)
         self.num += 1
-        # if self.time > self.showgraph:
-        #     self.showgraph += 1000
-        #     plt.plot(self.times, self.dists)
-        #     plt.show()
-        if self.simulation and self.num % 1000 == 0:
+        if self.simulate and self.num % 1000 == 0:
             with open('/media/PID_results/err.npy', 'wb') as f:
-               np.save(f, self.dist_diff, allow_pickle=True, fix_imports=True)[source]
+               np.save(f, self.dists, allow_pickle=True)
 
 def main(args=None):
     PID_node = polar_PID()
