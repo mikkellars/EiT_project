@@ -104,13 +104,15 @@ def naive_merge_cluster(clusters, max_cluster_distance):
 
 class RANSAC_subscriber():
     def __init__(self):
+        if not rospy.has_param('~simulate'):
+            ValueError('Need to set simulate param')
 
-        self.simulate = rospy.get_param('~simulate', True)
+        self.simulate = False #rospy.get_param('~simulate')
+        
         s_topic = "/laser/scan" 
         p_topic = "laser/dist_to_wall"
         if not self.simulate:
             s_topic = "/scan"
-
         rospy.init_node("ransac_wall_dist_pub", anonymous=True)
         self.subscription = rospy.Subscriber(s_topic, LaserScan, self.RANSAC, queue_size=1)
         print('starting RANSAC node')
