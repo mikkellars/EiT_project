@@ -4,12 +4,12 @@
   <arg name="world" default="empty"/> 
   <arg name="paused" default="false"/>
   <arg name="use_sim_time" default="true"/>
-  <arg name="gui" default="true"/>
+  <arg name="gui" default="false"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
   
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find mybot_gazebo)/worlds/hole_world_2.world"/>
+    <arg name="world_name" value="$(find mybot_gazebo)/worlds/hole_world_1.world"/>
     <arg name="paused" value="$(arg paused)"/>
     <arg name="use_sim_time" value="$(arg use_sim_time)"/>
     <arg name="gui" value="$(arg gui)"/>
@@ -46,14 +46,14 @@
 
 
 
-  <!-- Show in Rviz   -->
+  <!-- Show in Rviz   
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find mybot_gazebo)/rviz/final_config.rviz"/> 
+-->
 
-
-<!--    Provide the Map  -->
+<!--    Provide the Map  
 <arg name="map_file" default="$(find mybot_gazebo)/maps/complicated_2.yaml"/>
 <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)"/>    
-
+-->
 <!--   Start Localization   -->
 <include file="$(find amcl)/launch/amcl.launch"/>  
 

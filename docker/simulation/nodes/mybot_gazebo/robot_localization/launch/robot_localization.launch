@@ -1,0 +1,8 @@
+<launch> 
+  <!--<rosparam command="load" file="$(find prato_bringup)/providers/skills/navigation/localization/robot_localization/config/ekf_map_baselink.yaml" />
+  <rosparam command="load" file="$(find prato_bringup)/providers/skills/navigation/localization/robot_localization/config/navsat_params.yaml" />-->
+  <rosparam command="load" file="$(find prato_bringup)/providers/skills/navigation/localization/robot_localization/config/ekf_odom_baselink.yaml" />
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="ekf_odom_baselink" clear_params="true"/>
+
+</launch>

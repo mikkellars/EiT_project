@@ -1,0 +1,56 @@
+# Reference frames
+odom_frame_id: odom
+global_frame_id: map
+base_frame_id: chassis #base_link
+tf_broadcast: true
+
+# Overall filter parameters
+min_particles: 100
+max_particles: 5000
+kld_err: 0.05
+kld_z: 0.99
+update_min_d: 0.2
+update_min_a: 0.2
+resample_interval: 2
+transform_tolerance: 0.2
+recovery_alpha_fast: 0.0
+recovery_alpha_slow: 0.0
+gui_publish_rate: 10.0
+save_pose_rate: -1.0
+use_map_topic: true
+first_map_only: false
+
+# Set inital pose rosbag 10 
+#initial_pose_x: -0.447 
+#initial_pose_y: 0.002 
+#initial_pose_a: 0.029 
+
+# Set inital pose rosbag 09
+#initial_pose_x: 5.221
+#initial_pose_y: -1.157
+#initial_pose_a: -1.428
+
+
+# Laser model parameters
+laser_min_range: 0.5
+laser_max_range: 100
+laser_max_beams: 50
+laser_z_hit: 0.5
+laser_z_max: 0.05
+laser_z_rand: 0.5
+laser_z_short: 0.1
+laser_sigma_hit: 0.2
+laser_lambda_short: 0.1
+laser_likelihood_max_dist: 15.0
+laser_model_type: likelihood_field
+do_beamskip: false
+beam_skip_distance: 2.0
+beam_skip_threshold: 1.0
+
+# Odometry model parameters
+odom_model_type: omni-corrected
+odom_alpha1: 0.08
+odom_alpha2: 0.08
+odom_alpha3: 0.08
+odom_alpha4: 0.08
+odom_alpha5: 0.08

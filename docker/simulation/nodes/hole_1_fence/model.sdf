@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+    <model name='hole_1_fence'>
+        <pose frame=''>0 0 -0.2 0 0 0</pose>
+	<static>true</static>
+	<link name='hole_fence_link'>
+        <visual name='visual'>
+	   <geometry>
+	     <mesh>
+	       <uri>model://hole_1_fence/meshes/fence_w_hole01.dae</uri>
+	       <scale>10 10 10</scale>
+	     </mesh>
+	   </geometry>
+        </visual>
+	<collision name='collision'>
+	  <geometry>
+	    <mesh>
+	      <uri>model://hole_1_fence/meshes/fence_w_hole01.dae</uri>
+	       <scale>10 10 10</scale>
+	    </mesh>
+	  </geometry>
+	</collision>    
+    </link>
+  </model>
+</sdf>
