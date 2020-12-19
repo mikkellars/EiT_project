@@ -107,7 +107,7 @@ class RANSAC_subscriber():
         if not rospy.has_param('~simulate'):
             ValueError('Need to set simulate param')
 
-        self.simulate = False #rospy.get_param('~simulate')
+        self.simulate = True #rospy.get_param('~simulate')
         
         s_topic = "/laser/scan" 
         p_topic = "laser/dist_to_wall"
@@ -257,14 +257,14 @@ class RANSAC_subscriber():
         cv.circle(self.image, (cx,cy), 0, (255, 255, 255), thickness=3)
 
         saverate = 5
-        if self.simulate:
-            if (self.num % saverate == 0):
-                cv.imwrite(f'/assets/images/laser_scan/scan_{self.num//10:03d}.jpg', self.image)
-                print(f'Writing image: {self.num // saverate}')
+    #    if self.simulate:
+    #        if (self.num % saverate == 0):
+    #            cv.imwrite(f'/assets/images/laser_scan/scan_{self.num//10:03d}.jpg', self.image)
+    #            print(f'Writing image: {self.num // saverate}')
 
-        elif not self.simulate:
-            cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.jpg', self.image)
-            print(f'Writing image: {self.num}')
+    #    elif not self.simulate:
+    #        cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.jpg', self.image)
+    #        print(f'Writing image: {self.num}')
 
         self.num += 1
         #print(f'Took { time.time() - start_time:0.3f} s')
