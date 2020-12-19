@@ -1,12 +1,15 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0"?>
 <launch>
-    <param name="robot_description" command="$(find xacro)/xacro.py '$(find frobit_description)/urdf/frobit.xarco'"/>
 
     <!-- Spawning coordinates -->
-    <arg name="x" default="0"/>
-    <arg name="y" default="0"/>
-    <arg name="z" default="0"/>
+    <arg name="x" default="0" />
+    <arg name="y" default="0" />
+    <arg name="z" default="0" />
+    <arg name="robot_name" default="frobit" />
 
-    <nodes name="frobit_spawn" pkg="gazebo_ros" type="spawn_model" output="screen" 
-           args="-urdf -pargam frobit_description -model frobit -x $(arg x) -y $(arg y) -z $(arg z)" />
+    <param name="robot_description" command="$(find xacro)/xacro.py --inorder '$(find frobit_description)/urdf/frobit.xarco'"/>
+
+    <nodes name="spawn_$(arg robot_name)" pkg="gazebo_ros" type="spawn_model" output="screen" 
+           args="-urdf -param robot_description -model $(arg robot_name) -x $(arg x) -y $(arg y) -z $(arg z)"/>
+
 </launch>

@@ -23,6 +23,12 @@
   <node name="mybot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
    args="-urdf -param robot_description -model mybot" />
 
+<!-- 
+    <include file="$(find frobit_description)/launch/spawn.launch">
+        <arg name="x" value="1.0"/>
+    </include>   -->
+
+
 
   <!-- send fake joint values -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
