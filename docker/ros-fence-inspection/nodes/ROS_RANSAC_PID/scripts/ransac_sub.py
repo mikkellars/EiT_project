@@ -17,7 +17,7 @@ import math
 
 MIN_RANGE = 0.4             #Meters
 MAX_RANGE = 5.6             #Meters
-RATE = 50                   #Hz
+RATE = 5                   #Hz
 MIN_INLIERS = 8            #Observations
 RESIDUAL_THRESHOLD = 0.1    #Meters
 MAX_FAILS = 1               #Nr of times RANSAC may fail before we give up
