@@ -7,3 +7,6 @@
 [submodule "docker/ros-fence-inspection/nodes/laser_line_extraction"]
 	path = docker/ros-fence-inspection/nodes/laser_line_extraction
 	url = https://github.com/kam3k/laser_line_extraction.git
+[submodule "vision/utils/map"]
+	path = vision/utils/map
+	url = https://github.com/Cartucho/mAP.git
