@@ -56,8 +56,10 @@ class ICO():
             self.output = math.tanh(u)
         elif self.activation_func is 'sigmoid':
             self.output = self.__sigmoid(u)
+        elif self.activation_func is 'relu':
+            self.output = self.__relu(u)
         else:
-            ValueError('Argument only support tanh or sigmoid')
+            ValueError('Argument only support tanh, sigmoid or relu')
         
         return self.output
 
@@ -72,3 +74,10 @@ class ICO():
     @staticmethod
     def __sigmoid(input:float) -> float:
         return 1.0/(1.0+math.exp(-input))
+
+    @staticmethod
+    def __relu(input:float) -> float:
+        if input > 0:
+            return input
+        else:
+            return 0

@@ -24,17 +24,18 @@ class SpawnFrobit:
 
         self.delete_model('frobit')
 
+        self.last_check_time = rospy.get_time()
+
     def __get_location(self):
         """Gets location of frobit packages created
 
         Returns:
             [type]: location of the packages
         """
-        # location = None
-        # try:
-        location = roslib.packages.get_pkg_dir('frobit_description') + '/urdf/frobit.xarco'
-        # except:
-        #     ValueError('File not found: frobit_description/urdf/frobit.xarco')
+        try:
+            location = roslib.packages.get_pkg_dir('frobit_description') + '/urdf/frobit.xarco'
+        except:
+            ValueError('File not found: frobit_description/urdf/frobit.xarco')
 
         return location
 
@@ -64,7 +65,7 @@ class SpawnFrobit:
         except e:
             print("Model %s does not exist in gazebo.", name)
 
-    def spawn_model(self, name:str, x:float, y:float, z:float, angle:float):
+    def spawn_model(self, name:str, x:float, y:float, z:float=0.0, angle:float=0.0):
         """Spawning the frobit at the coordinates
 
         Args:
@@ -72,6 +73,11 @@ class SpawnFrobit:
             y (float): y-coordinate of robot spawn
             z (float): z-coordinate of robot spawn
         """
+        # Updates position
+        self.x = x
+        self.y = y
+        self.z = z
+
         # spawn new model
         req = SpawnModelRequest()
         req.model_name = name # model name from command line input
@@ -95,3 +101,34 @@ class SpawnFrobit:
             rospy.loginfo(res.status_message + " " + name)
         else:
             print("Error: model %s not spawn. error message = "% name + res.status_message)
+
+    def completed_one_lap(self, radius:float = 1.5, time_before_check:float = 5) -> bool:
+        """Function to detect if the robot has completed one lap
+        Uses a circle on the spawn point and if the robot is inside then a lap is completed.
+
+        Args:
+            radius (float, optional): Radius of the circle. Defaults to 0.5.
+
+        Returns:
+            complete_lap (bool): whether the robot complete one lap or not
+        """
+        complete_lap = False
+
+        self.model_coordinates = rospy.ServiceProxy( '/gazebo/get_model_state', GetModelState)
+        self.object_coordinates = self.model_coordinates("frobit","")
+        # Current model center
+        x = self.object_coordinates.pose.position.x
+        y = self.object_coordinates.pose.position.y
+        
+        # center of circle
+        a = self.x
+        b = self.y 
+       
+        if (x-a)**2 + (y-b)**2 <= (radius)**2:
+            if rospy.get_time() - self.last_check_time > time_before_check:
+                complete_lap = True
+            self.last_check_time = rospy.get_time()
+
+        print(rospy.get_time() - self.last_check_time)
+        return complete_lap
+            

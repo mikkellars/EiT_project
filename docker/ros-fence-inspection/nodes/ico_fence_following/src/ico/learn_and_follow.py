@@ -11,25 +11,37 @@ from geometry_msgs.msg import Twist, TwistStamped
 from std_msgs.msg import Float64
 
 class LearnFollow():
-    def __init__(self, sub_name, pub_name, target_dist, learn_inteval, simulate:bool = False, learn_type:str = 'one'):
-        self.sub_name = sub_name
-        self.simulate = simulate
-        self.target_dist = target_dist
-        self.learn_inteval = learn_inteval
-        self.learn_type = learn_type
+    def __init__(self, sub_name, pub_name, target_dist, learn_inteval, simulate:bool = False, learn_type:str = 'one', log:bool = False):
+        self.sub_name        = sub_name
+        self.simulate        = simulate
+        self.target_dist     = target_dist
+        self.learn_inteval   = learn_inteval
+        self.learn_type      = learn_type
 
         # Init ICO's
-        weight_init = random.uniform(0.5, 1.0)
+        weight_init          = random.uniform(0.0, 0.1)
         # Used if two ico learning
-        self.left_ico = ICO(lr=1.0, weight_predic = weight_init, activation_func = 'sigmoid')
-        self.right_ico = ICO(lr=1.0, weight_predic = weight_init, activation_func = 'sigmoid') 
+        self.left_ico        = ICO(lr=0.1, weight_predic = weight_init, activation_func = 'sigmoid')
+        self.right_ico       = ICO(lr=0.1, weight_predic = weight_init, activation_func = 'sigmoid') 
         # Used if one ico learning
-        self.ico = ICO(lr=1.0, weight_predic = weight_init) 
+        self.ico             = ICO(lr=0.1, weight_predic = weight_init) 
+
+        # Angle of attack ICO
+        self.ico_ang         = ICO(lr=0.1, weight_predic = random.uniform(0.0, 0.1)) 
 
         # Init ICO loggers
-        self.log_ico     = DataLogger('/assets/ico_logs/ico.txt')
-        self.log_ico_col = DataLogger('/assets/ico_logs/ico_col.txt')
-        self.log_idx = 0
+        self.log             = log
+        # Left and Right ico
+        self.log_ico_mc      = DataLogger('/assets/ico_logs/ico_mc.txt')
+        self.log_ico_mc_col  = DataLogger('/assets/ico_logs/ico_mc_col.txt')
+        self.log_mc_idx      = 0
+        self.time_mc         = rospy.get_time()
+
+        # Angle ico
+        self.log_ico_ang     = DataLogger('/assets/ico_logs/ico_ang.txt')
+        self.log_ico_ang_col = DataLogger('/assets/ico_logs/ico_ang_col.txt')
+        self.log_ang_idx     = 0
+        self.time_ang        = rospy.get_time()
 
         # Publisher to motors
         if self.simulate:
@@ -42,7 +54,7 @@ class LearnFollow():
             self.publisher_twist = rospy.Publisher(self.pub_name, TwistStamped, queue_size=1)
             # Subscriber to wall info
             self.subscription = rospy.Subscriber(self.sub_name, Polar_dist, self.__callback, queue_size=1)
-        
+
     def __detect_relfex(self, cur_dist):
         error = self.target_dist - cur_dist
         predictive = error
@@ -57,15 +69,38 @@ class LearnFollow():
 
     def __detect_relfex_ang(self, cur_dist, cur_ang):
         error = self.target_dist - cur_dist
-        predictive = error
+        predictive = cur_ang + 90.0
+        predictive /= 180
         reflex = 0
 
-        if cur_ang < -120: # Turn left
-            reflex = 1
-        elif cur_ang > -60: # Turn right
+        if cur_ang < -120: #and error > self.learn_inteval: # Turn left
             reflex = -1
-
+        elif cur_ang > -60:# and error < (-1*self.learn_inteval): # Turn right
+            reflex = 1
+        
         return reflex, predictive
+
+    def angle_ico_learning(self, cur_dist, cur_ang, sim:bool = True):
+        reflex, predictive = self.__detect_relfex_ang(cur_dist, cur_ang)
+
+        mc_val = self.ico_ang.run_and_learn(reflex, predictive)
+
+        right_mc_val = 0.0
+        left_mc_val = 0.0
+
+        if mc_val < 0:
+           right_mc_val -= mc_val * (-1)
+        elif mc_val > 0:
+           left_mc_val -= mc_val
+
+        if self.log:
+            cur_time = rospy.get_time() 
+            self.log_ico_ang.write_data(self.log_ang_idx, [cur_time - self.time_ang, predictive, self.ico_ang.weight_predic, mc_val])
+            self.log_ico_ang_col.write_data(self.log_ang_idx, [cur_time - self.time_ang, reflex])
+            self.log_ang_idx += 1
+
+       # print(f'reflex {reflex}, input: {predictive:0.3f}, weight {self.ico_ang.weight_predic:0.3f}, output {mc_val:0.3f}, Left: {left_mc_val:0.3f}, Right {right_mc_val:0.3f}')
+        return left_mc_val, right_mc_val
 
     def one_ico_learning(self, cur_ang, reflective, predictive, sim:bool = True, mc_scaling:float = 1.0, upper_thresh:float = 1.0):
         """One ico for learning to follow a fence. 
@@ -137,7 +172,7 @@ class LearnFollow():
             return msg
             
 
-    def two_ico_learning(self, cur_ang, reflective, predictive, sim:bool = True, mc_scaling:float = 1.0, upper_thresh:float = 1.0):
+    def two_ico_learning(self, cur_ang, reflective, predictive, sim:bool = True, mc_scaling:float = 1.0, upper_thresh:float = 1.0, ang_right=0.0, ang_left=0.0):
         """Two ico's one for each wheel. 
         If the reflective signal is negative the left motor is learning to drive closer to the fence
         If the reflective signal is positive the right motor is learning to drive away from the fence
@@ -157,6 +192,14 @@ class LearnFollow():
         left_mc_val = self.left_ico.run_and_learn(1 if reflective is -1 else 0, (-1)*predictive)
         right_mc_val = self.right_ico.run_and_learn(1 if reflective is 1 else 0, predictive)
         
+        if predictive < 0:
+            pred_test = predictive*(-1)
+        else:
+            pred_test = predictive 
+        left_mc_val += ang_left
+        right_mc_val += ang_right
+
+       # print(f'Error: {predictive:0.3f}, Decrease left: {ang_left:0.3f}, Decrease Right: {ang_right:0.3f}, Left: {left_mc_val:0.3f}, Right {right_mc_val:0.3f}, Weihgt {self.ico_ang.weight_predic:0.3f}')
 
         if (cur_ang < -100) and (reflective == -1): #reflective == -1:
             #print('right turn')
@@ -176,6 +219,14 @@ class LearnFollow():
             right_mc_val = upper_thresh
         if left_mc_val > upper_thresh:
             left_mc_val = upper_thresh
+
+        if self.log:
+            cur_time = rospy.get_time() 
+            r_ico_in = predictive
+            l_ico_in = (-1)*predictive
+            self.log_ico_mc.write_data(self.log_mc_idx, [cur_time - self.time_mc, l_ico_in, r_ico_in, self.left_ico.weight_predic, self.right_ico.weight_predic, left_mc_val, right_mc_val])
+            self.log_ico_mc_col.write_data(self.log_mc_idx, [cur_time - self.time_mc, 1 if reflective is -1 else 0, 1 if reflective is 1 else 0])
+            self.log_mc_idx += 1
 
         if sim:
             lin, ang = self.__convert_to_twist(vel_left = left_mc_val, vel_right = right_mc_val)
@@ -209,7 +260,7 @@ class LearnFollow():
             
 
     @staticmethod
-    def __convert_to_twist(vel_left, vel_right, wheel_dist:float = 0.14, ):
+    def __convert_to_twist(vel_left, vel_right, wheel_dist:float = 0.14):
         vel_lin = (vel_right + vel_left)/2.0 # [m/s]
         vel_ang = (vel_right - vel_left)/wheel_dist # [rad/s]
         return (vel_lin, vel_ang)
@@ -219,6 +270,7 @@ class LearnFollow():
 
         cur_dist = msg.dist
         cur_ang = np.rad2deg(msg.angle)
+
         # print(cur_ang)
         # TEST #
         #cur_dist = float('inf')
@@ -238,12 +290,21 @@ class LearnFollow():
 
         if self.learn_type is 'one':
             msg = self.one_ico_learning(cur_ang, reflex, predictive, mc_scaling=0.3, upper_thresh=0.5)
-            print(f"Reflex {reflex}, Input {predictive:0.2f}, Weight {self.ico.weight_predic:0.2f}, Output {self.ico.output:0.2f}, Lin: {msg.linear.x:0.2f}, Ang: {msg.angular.z:0.2f}")
+         #   print(f"Reflex {reflex}, Input {predictive:0.2f}, Weight {self.ico.weight_predic:0.2f}, Output {self.ico.output:0.2f}, Lin: {msg.linear.x:0.2f}, Ang: {msg.angular.z:0.2f}")
         elif self.learn_type is 'two':
-            msg = self.two_ico_learning(cur_ang, reflex, predictive, mc_scaling=0.3, upper_thresh=0.5)
-            print(f"Reflex {reflex}, Input {predictive:0.2f}, Weight Left {self.left_ico.weight_predic:0.2f}, Output Left {self.left_ico.output:0.2f}, Weight Right {self.right_ico.weight_predic:0.2f}, Output Right {self.right_ico.output:0.2f}, Lin: {msg.linear.x:0.2f}, Ang: {msg.angular.z:0.2f}")
+           # diff_msg = self.diff_ico_learning(cur_dist)
+           # diff_msg = self.angle_ico_learning(cur_dist, cur_ang)
+            left, right = self.angle_ico_learning(cur_dist, cur_ang)
+            msg = self.two_ico_learning(cur_ang, reflex, predictive, mc_scaling=0.5, upper_thresh=0.5, ang_right=right, ang_left=left)
+        #    print(f"Reflex {reflex}, Input {predictive:0.2f}, Weight Left {self.left_ico.weight_predic:0.2f}, Output Left {self.left_ico.output:0.2f}, Weight Right {self.right_ico.weight_predic:0.2f}, Output Right {self.right_ico.output:0.2f}, Lin: {msg.linear.x:0.2f}, Ang: {msg.angular.z:0.2f}")
+            print(f"Weight Left {self.left_ico.weight_predic:0.4f}, Weight Right {self.right_ico.weight_predic:0.4f}, Weight angle {self.ico_ang.weight_predic:0.4f}")
         else:
             ValueError('Learning type only supports one or two')
+
+        # self.log_ico.write_data(self.log_idx, [predictive, self.ico.weight_predic, mc_val])
+
+       # print(f'diff lin: {diff_msg.linear.x:0.2f}, diff ang {diff_msg.angular.z:0.2f}')
+        
 
         self.publisher_twist.publish(msg)
 
@@ -251,20 +312,22 @@ class LearnFollow():
         cur_dist = msg.dist
         cur_ang = msg.angle
         cur_ang = np.rad2deg(cur_ang)
-        print(cur_ang)
+
         if cur_dist == float('inf') or cur_dist == -float('inf'):
             return
 
         # Run and learning
         reflex, predictive = self.__detect_relfex(cur_dist)
-       # reflex, predictive = self.__detect_relfex_ang(cur_dist, cur_ang)
+
 
         if self.learn_type is 'one':
             msg = self.one_ico_learning(cur_ang, reflex, predictive, sim=False, mc_scaling=0.3, upper_thresh=0.5)
             print(f"Reflex {reflex}, Input {predictive:0.2f}, Weight {self.ico.weight_predic:0.2f} Lin: {msg.twist.linear.x:0.2f}, Ang: {msg.twist.angular.z:0.5f}")
         elif self.learn_type is 'two':
-           msg = self.two_ico_learning(cur_ang, reflex, predictive, sim=False, mc_scaling=0.3, upper_thresh=0.5)
-           print(f"Reflex {reflex}, Input {predictive:0.2f}, Weight Left {self.left_ico.weight_predic:0.2f} Weight Right {self.right_ico.weight_predic:0.2f} Lin: {msg.twist.linear.x:0.2f}, Ang: {msg.twist.angular.z:0.5f}")
+          # msg = self.two_ico_learning(cur_ang, reflex, predictive, sim=False, mc_scaling=0.3, upper_thresh=0.5)
+          # print(f"Reflex {reflex}, Input {predictive:0.2f}, Weight Left {self.left_ico.weight_predic:0.2f} Weight Right {self.right_ico.weight_predic:0.2f} Lin: {msg.twist.linear.x:0.2f}, Ang: {msg.twist.angular.z:0.5f}")
+            left, right = self.angle_ico_learning(cur_dist, cur_ang)
+            msg = self.two_ico_learning(cur_ang, reflex, predictive, sim=False, mc_scaling=0.5, upper_thresh=0.5, ang_right=right, ang_left=left)
         else:
             ValueError('Learning type only supports one or two')
 

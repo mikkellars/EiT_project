@@ -21,24 +21,14 @@
   <param name="robot_description" command="$(find xacro)/xacro '$(find frobit_description)/urdf/frobit.xarco'"/>
 
   <node name="mybot_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
-   args="-urdf -param robot_description -model frobit" />
+    args="-urdf -param robot_description -model frobit" />
 
 
 
- <rosparam file="$(find frobit_description)/config/control.yaml" command="load" />
+  <rosparam file="$(find frobit_description)/config/control.yaml" command="load" />
     
-    <node name="controller_spawner" pkg="controller_manager" type="spawner"
-          respawn="false" output="screen" args="velocity_controller" />
-
-<!-- <rosparam command="load" file="$(find frobit_description)/config/joint_states.yaml" />
-<rosparam command="load" file="$(find frobit_description)/config/control.yaml" />
-<node name="controller_spawner"
-    pkg="controller_manager"
-    type="spawner" respawn="false"
-    output="screen" ns="/"
-    args="joint_publisher
-      velocity_controller"
-  /> -->
+  <node name="controller_spawner" pkg="controller_manager" type="spawner"
+    respawn="true" output="screen" args="velocity_controller" />
 
 
 
