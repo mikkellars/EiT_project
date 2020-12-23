@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install -y \
 	python-catkin-tools \
 	ros-melodic-vision-opencv \
 	ros-melodic-cv-bridge \
+	ros-melodic-gazebo-msgs \
+	ros-melodic-urdf \
 	python3-opencv \
 	wget \
 	curl \
@@ -45,6 +47,7 @@ COPY nodes/detection /catkin_ws/src/detection
 COPY nodes/ROS_RANSAC_PID /catkin_ws/src/ROS_RANSAC_PID
 COPY nodes/ico_fence_following /catkin_ws/src/ico_fence_following
 COPY nodes/laser_line_extraction /catkin_ws/src/laser_line_extraction
+COPY nodes/frobit_description /catkin_ws/src/frobit_description
 
 # Copying the launch files
 COPY launch /catkin_ws/src/launch

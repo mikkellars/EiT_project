@@ -6,7 +6,7 @@ from ico.learn_and_follow import LearnFollow
 def main():
 
     rospy.init_node('ico_fence_following', anonymous=True)
-    rospy.Rate(50)
+    rospy.Rate(5)
 
     if not rospy.has_param('~simulate'):
         ValueError('Need to set simulate param')
@@ -14,9 +14,9 @@ def main():
     simulate = rospy.get_param('~simulate')
     
     if simulate: # Simulate
-        pub_name_mc = ['/cmd_vel']
+        pub_name_mc = '/velocity_controller/cmd_vel'
     else: # Frobit
-        pub_name_mc = ['/frobit/left_pwm', '/frobit/right_pwm']
+        pub_name_mc = '/frobit/twist'
 
     sub_name = 'laser/dist_to_wall' 
 
