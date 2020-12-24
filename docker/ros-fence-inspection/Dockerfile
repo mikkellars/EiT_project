@@ -8,6 +8,8 @@ RUN apt-get update && apt-get install -y \
 	python-catkin-tools \
 	ros-melodic-vision-opencv \
 	ros-melodic-cv-bridge \
+	ros-melodic-gazebo-msgs \
+	ros-melodic-urdf \
 	python3-opencv \
 	wget \
 	curl \
@@ -24,7 +26,7 @@ RUN apt-get update && apt-get install -y \
 	#python3-pillow
 
 RUN pip3 install --upgrade pip
-RUN pip3 install catkin_pkg pyyaml rospkg # pillow==5.3.0 
+RUN pip3 install catkin_pkg pyyaml rospkg defusedxml scipy
 
 # Install Tensorflow Edge CPU libraries
 RUN echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | tee /etc/apt/sources.list.d/coral-edgetpu.list \
@@ -45,6 +47,7 @@ COPY nodes/detection /catkin_ws/src/detection
 COPY nodes/ROS_RANSAC_PID /catkin_ws/src/ROS_RANSAC_PID
 COPY nodes/ico_fence_following /catkin_ws/src/ico_fence_following
 COPY nodes/laser_line_extraction /catkin_ws/src/laser_line_extraction
+COPY nodes/frobit_description /catkin_ws/src/frobit_description
 
 # Copying the launch files
 COPY launch /catkin_ws/src/launch

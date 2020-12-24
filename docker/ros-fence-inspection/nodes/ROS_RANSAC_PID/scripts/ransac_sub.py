@@ -17,7 +17,7 @@ import math
 
 MIN_RANGE = 0.4             #Meters
 MAX_RANGE = 5.6             #Meters
-RATE = 50                   #Hz
+RATE = 5                   #Hz
 MIN_INLIERS = 8            #Observations
 RESIDUAL_THRESHOLD = 0.1    #Meters
 MAX_FAILS = 1               #Nr of times RANSAC may fail before we give up
@@ -104,13 +104,15 @@ def naive_merge_cluster(clusters, max_cluster_distance):
 
 class RANSAC_subscriber():
     def __init__(self):
+        if not rospy.has_param('~simulate'):
+            ValueError('Need to set simulate param')
 
-        self.simulate = rospy.get_param('~simulate', True)
+        self.simulate = True #rospy.get_param('~simulate')
+        
         s_topic = "/laser/scan" 
         p_topic = "laser/dist_to_wall"
         if not self.simulate:
             s_topic = "/scan"
-
         rospy.init_node("ransac_wall_dist_pub", anonymous=True)
         self.subscription = rospy.Subscriber(s_topic, LaserScan, self.RANSAC, queue_size=1)
         print('starting RANSAC node')
@@ -255,14 +257,14 @@ class RANSAC_subscriber():
         cv.circle(self.image, (cx,cy), 0, (255, 255, 255), thickness=3)
 
         saverate = 5
-        if self.simulate:
-            if (self.num % saverate == 0):
-                cv.imwrite(f'/assets/images/laser_scan/scan_{self.num//10:03d}.jpg', self.image)
-                print(f'Writing image: {self.num // saverate}')
+    #    if self.simulate:
+    #        if (self.num % saverate == 0):
+    #            cv.imwrite(f'/assets/images/laser_scan/scan_{self.num//10:03d}.jpg', self.image)
+    #            print(f'Writing image: {self.num // saverate}')
 
-        elif not self.simulate:
-            cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.jpg', self.image)
-            print(f'Writing image: {self.num}')
+    #    elif not self.simulate:
+    #        cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.jpg', self.image)
+    #        print(f'Writing image: {self.num}')
 
         self.num += 1
         #print(f'Took { time.time() - start_time:0.3f} s')

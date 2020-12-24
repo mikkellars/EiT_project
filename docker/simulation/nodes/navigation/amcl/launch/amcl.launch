@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+  <node name="amcl" pkg="amcl" type="amcl" clear_params="true" respawn="false" output="screen">
+    <remap from="scan" to="/laser/scan" />
+    <rosparam command="load" file="$(find amcl)/cfg/amcl.yaml" />
+  </node>
+
+  <!-- indoor_localization 
+  <include file="$(find prato_bringup)/providers/feeding/launch/titan_indoor_localization.launch"/>-->
+</launch>

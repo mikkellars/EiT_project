@@ -15,6 +15,7 @@ class ICO():
         self.x_predic = 0.0
         self.lr = lr
         self.activation_func = activation_func
+        self.output = 0.0
 
     def run_and_learn(self, x_reflex:float, x_predic:float) -> float:
         """Propagates through the network and updates the weight.
@@ -52,13 +53,15 @@ class ICO():
         """
         u = self.weight_reflex * x_reflex + self.weight_predic * x_predic
         if self.activation_func is 'tanh':
-            y = math.tanh(u)
+            self.output = math.tanh(u)
         elif self.activation_func is 'sigmoid':
-            y = self.__sigmoid(u)
+            self.output = self.__sigmoid(u)
+        elif self.activation_func is 'relu':
+            self.output = self.__relu(u)
         else:
-            ValueError('Argument only support tanh or sigmoid')
+            ValueError('Argument only support tanh, sigmoid or relu')
         
-        return y
+        return self.output
 
     def update_weight(self, x_reflex_new:float):
         """Updates the weights for the predictive signals.
@@ -71,3 +74,10 @@ class ICO():
     @staticmethod
     def __sigmoid(input:float) -> float:
         return 1.0/(1.0+math.exp(-input))
+
+    @staticmethod
+    def __relu(input:float) -> float:
+        if input > 0:
+            return input
+        else:
+            return 0

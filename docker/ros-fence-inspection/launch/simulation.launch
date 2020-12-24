@@ -8,12 +8,13 @@
 
     <node name="ico_fence_following" pkg="ico_fence_following" type="ico_fence_following.py" output="screen" clear_params="true">
         <param name="simulate" value="true" />
-    </node>
-<!--
+        <param name="log" value="false" />
+    </node> 
+
     <node name="dist_ransac_lidar" pkg="dist_ransac" type="ransac_sub.py" output="screen" clear_params="true">
         <param name="simulate" value="false" />
     </node>
-    -->
+   <!-- 
     <node name="line_extractor" pkg="laser_line_extraction" type="line_extraction_node">
         <param name="~frequency" value="30.0" />
         <param name="~frame_id" value="laser" />
@@ -31,4 +32,5 @@
         <param name="~outlier_dist" value="0.06" />
         <param name="~min_line_points" value="10" />
     </node>
+    -->
 </launch>

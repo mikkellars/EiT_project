@@ -1,0 +1,16 @@
+frobit:
+ frobit_joint_publisher:
+   type: "joint_state_controller/JointStateController"
+   publish_rate: 50
+
+ frobit_velocity_controller:
+   type: "diff_drive_controller/DiffDriveController"
+   left_wheel: 'left_wheel_hinge'
+   right_wheel: 'right_wheel_hinge'
+   publish_rate: 50
+   pose_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
+   twist_covariance_diagonal: [0.001, 0.001, 0.001, 0.001, 0.001, 0.03]
+   cmd_vel_timeout: 0.25
+   wheel_separation : 0.14
+   wheel_radius : 0.05
+

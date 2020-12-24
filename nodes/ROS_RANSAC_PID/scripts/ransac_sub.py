@@ -105,7 +105,7 @@ def naive_merge_cluster(clusters, max_cluster_distance):
 class RANSAC_subscriber():
     def __init__(self):
 
-        self.simulate = rospy.get_param('~simulate', True)
+        self.simulate = False#rospy.get_param('~simulate', True)
         s_topic = "/laser/scan" 
         p_topic = "laser/dist_to_wall"
         if not self.simulate:
