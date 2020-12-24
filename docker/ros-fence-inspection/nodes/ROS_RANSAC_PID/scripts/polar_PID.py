@@ -10,7 +10,7 @@ from dist_ransac.msg import Polar_dist
 import matplotlib.pyplot as plt
 from time import time
 
-TARGET_DIST = 1
+TARGET_DIST = 1.75
 RATE = 50
 
 class polar_PID():
@@ -18,13 +18,13 @@ class polar_PID():
         print("STARTING POLAR PID NODE")
     
         topic_out = ""
-        self.simulate = rospy.get_param('~simulate', True)
+        self.simulate = rospy.get_param('~simulate', False)
         if not self.simulate:
-            self.P = 0.01
-            self.I = 0.01
+            self.P = 0.015
+            self.I = 0.001
             self.D = 0.01
             self.ang_vel_max = 0.04
-            self.vel = 0.4
+            self.vel = 0.5
             topic_out = "/frobit/twist"
             self.msgType = TwistStamped
 
@@ -79,8 +79,6 @@ class polar_PID():
         ctrl = self.P * dist_diff
         ctrl += self.I * self.integral_err 
         ctrl += self.D * dist_deriv
-        if self.num % 10 == 0:
-            print(self.P * dist_diff, self.I * self.integral_err, self.D * dist_deriv)
 
         # limit to max/min values
         if ctrl > self.ang_vel_max:
@@ -114,15 +112,15 @@ class polar_PID():
 
         #print 
         if self.num % 10 == 0:
-            print("In:", dist_diff, "    out:", ctrl)
+            print("In: ", np.round(dist_diff, 5), "    out: ", np.round(ctrl, 5), "	P:", np.round(self.P * dist_diff, 5), "	I:", np.round(self.I * self.integral_err, 5), "	P:", np.round(self.D * dist_deriv, 5))
         self.num += 1
         # if self.time > self.showgraph:
         #     self.showgraph += 1000
         #     plt.plot(self.times, self.dists)
         #     plt.show()
-        if self.simulate and self.num % 1000 == 0:
-            with open('/media/PID_results/err.npy', 'wb') as f:
-               np.save(f, self.dists, allow_pickle=True)
+        # if self.simulate and self.num % 10 == 0:
+        #    with open('/assets/images/laser_scan/dist_err.npy', 'wb') as f:
+        #       np.save(f, self.dists, allow_pickle=True)
 
 def main(args=None):
     PID_node = polar_PID()

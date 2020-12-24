@@ -14,14 +14,15 @@ from sensor_msgs.msg import LaserScan
 from dist_ransac.msg import Polar_dist
 import time
 import math
+import time
 
 MIN_RANGE = 0.4             #Meters
 MAX_RANGE = 5.6             #Meters
-RATE = 5                   #Hz
-MIN_INLIERS = 8            #Observations
+RATE = 50                   #Hz
+MIN_INLIERS = 8             #Observations
 RESIDUAL_THRESHOLD = 0.1    #Meters
 MAX_FAILS = 1               #Nr of times RANSAC may fail before we give up
-MAX_CLUSTER_DIST = 0.4     #Meters, distance between points in distinct clusters
+MAX_CLUSTER_DIST = 0.4      #Meters, distance between points in distinct clusters
 CRITICAL_DIST = 0.6         #Meters, distance before prioritizing left lines
 
 def nearest_point_on_line(line_start, line_end, point=np.array((0,0))):
@@ -107,7 +108,7 @@ class RANSAC_subscriber():
         if not rospy.has_param('~simulate'):
             ValueError('Need to set simulate param')
 
-        self.simulate = True #rospy.get_param('~simulate')
+        self.simulate = False#True #rospy.get_param('~simulate')
         
         s_topic = "/laser/scan" 
         p_topic = "laser/dist_to_wall"
@@ -128,9 +129,14 @@ class RANSAC_subscriber():
         self.image = np.array([0])
         self.drawScale = 125
         self.num = 0
+        self.dists = []
+        self.start_time = time.time()
+
+        with open('/assets/images/laser_scan/dist_err.npy', 'wb') as f:
+           pass
 
     def RANSAC(self, msg):
-        start_time = time.time()
+        #start_time = time.time()
         angle_min = msg.angle_min
         angle_max = msg.angle_max
         angle_inc = msg.angle_increment
@@ -156,7 +162,7 @@ class RANSAC_subscriber():
                                np.int(np.ceil(self.drawScale*2*msg.range_max)), 3], dtype=np.uint8)
         self.draw_points(positions)
 
-        ctime = time.time()
+        #ctime = time.time()
         #print(positions.shape, " points")
         clusters = naive_clustering(positions, self.max_cluster_dist)
         #print(clusters.shape, "clusters")
@@ -249,6 +255,11 @@ class RANSAC_subscriber():
         rmsg.dist = min_dist
         rmsg.angle = min_angle
         self.publisher.publish(rmsg)
+
+        #time and dist logging
+        time_diff = time.time()-self.start_time
+        self.dists.append([time_diff, min_dist])
+
         cv.putText(self.image, f'Dist: {rmsg.dist:0.4f}, Angle: {np.rad2deg(rmsg.angle):0.4f}', (10,50), cv.FONT_HERSHEY_SIMPLEX, 2, (255,255,255))
 
         cx = np.int(np.round(self.image.shape[0]//2 + self.drawScale * min_dist_point[0]))
@@ -265,6 +276,10 @@ class RANSAC_subscriber():
     #    elif not self.simulate:
     #        cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.jpg', self.image)
     #        print(f'Writing image: {self.num}')
+
+        if (not self.simulate and self.num % 1 == 0) or (self.simulate and self.num%500 == 0):
+             with open('/assets/images/laser_scan/dist_err.npy', 'wb') as f:
+                np.save(f, np.asarray(self.dists), allow_pickle=True)
 
         self.num += 1
         #print(f'Took { time.time() - start_time:0.3f} s')
@@ -307,3 +322,4 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
+
