@@ -24,16 +24,15 @@
     args="-urdf -param robot_description -model frobit" />
 
 
-
   <rosparam file="$(find frobit_description)/config/control.yaml" command="load" />
     
   <node name="controller_spawner" pkg="controller_manager" type="spawner"
-    respawn="true" output="screen" args="velocity_controller" />
+    respawn="false" output="screen" args="velocity_controller" />
 
 
 
 
 </launch>
 
- 
+  
 

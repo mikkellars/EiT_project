@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <launch>
-    <param name="robot_description" command="$(find xacro)/xacro.py '$(find frobit_description)/urdf/frobit.xarco'" />
     
     <!-- Spawning coordinates -->
     <arg name="x" default="0"/>
     <arg name="y" default="0"/>
-    <arg name="z" default="0.5"/>
+    <arg name="z" default="0"/>
     <arg name="name" default="frobit"/>
-    
+    <arg name='vel_cont_name' default="controller_spawner"/>
+
+    <param name="robot_description" command="$(find xacro)/xacro '$(find frobit_description)/urdf/frobit.xarco'"/>
+
     <node name="frobit_spawn" pkg="gazebo_ros" type="spawn_model" output="screen"
-          args="-urdf -param robot_description -model $(arg name) -x $(arg x) -y $(arg y) -z $(arg z)" />
+        args="-urdf -param robot_description -model $(arg name) -x $(arg x) -y $(arg y) -z $(arg z)" />
+
+    
+    <rosparam file="$(find frobit_description)/config/control.yaml" command="load" />
+    
+    <node name="$(arg vel_cont_name)" pkg="controller_manager" type="spawner"
+        respawn="false" output="screen" args="velocity_controller" /> 
+
+
           
 </launch>

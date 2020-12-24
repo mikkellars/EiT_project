@@ -31,17 +31,18 @@ class LearnFollow():
 
         # Init ICO loggers
         self.log             = log
-        # Left and Right ico
-        self.log_ico_mc      = DataLogger('/assets/ico_logs/ico_mc.txt')
-        self.log_ico_mc_col  = DataLogger('/assets/ico_logs/ico_mc_col.txt')
-        self.log_mc_idx      = 0
-        self.time_mc         = rospy.get_time()
+        if self.log: 
+            # Left and Right ico
+            self.log_ico_mc      = DataLogger('/assets/ico_logs/ico_mc.txt')
+            self.log_ico_mc_col  = DataLogger('/assets/ico_logs/ico_mc_col.txt')
+            self.log_mc_idx      = 0
+            self.time_mc         = rospy.get_time()
 
-        # Angle ico
-        self.log_ico_ang     = DataLogger('/assets/ico_logs/ico_ang.txt')
-        self.log_ico_ang_col = DataLogger('/assets/ico_logs/ico_ang_col.txt')
-        self.log_ang_idx     = 0
-        self.time_ang        = rospy.get_time()
+            # Angle ico
+            self.log_ico_ang     = DataLogger('/assets/ico_logs/ico_ang.txt')
+            self.log_ico_ang_col = DataLogger('/assets/ico_logs/ico_ang_col.txt')
+            self.log_ang_idx     = 0
+            self.time_ang        = rospy.get_time()
 
         # Publisher to motors
         if self.simulate:

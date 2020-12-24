@@ -42,7 +42,11 @@ def gen_spawn_pos(map_bound, num_of_pos):
             gen_x = random.uniform(x_bound[1][0], x_bound[0][1])
             gen_y = random.uniform(y_bound[0][0], y_bound[1][0])
 
-        positions.append((gen_x, gen_y))
+        # Generate angle
+        rand_ang = random.uniform(0, 360)
+        while(rand_ang > 60 and rand_ang < 120):
+            rand_ang = random.uniform(0, 360)
+        positions.append((gen_x, gen_y, rand_ang))
 
 
     return positions
@@ -50,7 +54,22 @@ def gen_spawn_pos(map_bound, num_of_pos):
     
 
 def main():
-    poses = gen_spawn_pos(MAP_1, 1)
+    # Launch file param
+    # if not rospy.has_param('~simulate') or not rospy.has_param('~log'):
+    #     ValueError('Need to set simulate and log param')
+
+    # simulate = rospy.get_param('~simulate')
+    # log = rospy.get_param('~log')
+
+    # Generate poses for square map
+    poses = gen_spawn_pos(MAP_1, 10)
+
+    # Init for ico learning
+    pub_name_mc = '/velocity_controller/cmd_vel'
+    sub_name = 'laser/dist_to_wall' 
+
+    target_dist = 1.0 # Meters
+    learn_inteval = 0.2 # Meters: Accepted interval without learning
 
     rospy.init_node("ico_fence_follow_eval", anonymous=True)
     
@@ -59,32 +78,14 @@ def main():
     spawn = SpawnFrobit()
     
     # Running ico learning on the different generate poses
-    for x, y in poses:
-        spawn.spawn_model('frobit', x, y)
-      #  spawn.delete_model('frobit')
-
- 
-    
-
+    for x, y, angle in poses:
+        spawn.move_frobit('frobit', x, y, angle=angle)
         
-    # while True:
-        # if spawn.completed_one_lap(time_before_check=5):
-        #     break
-
-    # pub_name_mc = ['/frobit/cmd_vel']
-    # sub_name = 'laser/dist_to_wall' 
-
-    # target_dist = 1.0 # Meters
-    # learn_inteval = 0.2 # Meters: Accepted interval without learning
-
-    # learn_follow = LearnFollow(sub_name, pub_name_mc, target_dist, learn_inteval, simulate=True, learn_type = 'two')
-
-    # try:
-    #     rospy.spin()
-    # except KeyboardInterrupt:
-    #     print("Shutting down")
-
+        # Running ico learning for one lap
+        #print(spawn.completed_one_lap(time_before_check=5))
+        learn_follow = LearnFollow(sub_name, pub_name_mc, target_dist, learn_inteval, simulate=True, learn_type = 'two', log=False)
+        while not spawn.completed_one_lap(time_before_check=5):
+            pass
 
 if __name__ == '__main__':
     main()
-
