@@ -9,8 +9,10 @@ import numpy as np
 
 import roslaunch
 
+from tqdm import tqdm
 from sim_spawn.spawn_frobit import SpawnFrobit
 from ico.learn_and_follow import LearnFollow 
+
 
 random.seed(0)
 
@@ -49,7 +51,7 @@ def gen_spawn_pos(map_bound, num_of_pos):
             gen_y = random.uniform(y_bound[0][0], y_bound[1][0])
 
         
-      #  positions.append((gen_x, gen_y, rand_ang))
+        positions.append((gen_x, gen_y, rand_ang))
 
 
     return positions
@@ -80,8 +82,11 @@ def main():
 
     spawn = SpawnFrobit()
 
+
     # Running ico learning on the different generate poses
-    for x, y, angle in poses:
+    bar = tqdm(poses)
+    for x, y, angle in bar:
+        # print(f'x: {x},  y: {y},  angle:  {angle}')
         spawn.move_frobit('frobit', x, y, angle=angle)
         
         # Running ico learning for one lap
