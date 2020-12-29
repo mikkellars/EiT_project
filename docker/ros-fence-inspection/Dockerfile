@@ -26,7 +26,7 @@ RUN apt-get update && apt-get install -y \
 	#python3-pillow
 
 RUN pip3 install --upgrade pip
-RUN pip3 install catkin_pkg pyyaml rospkg defusedxml scipy
+RUN pip3 install catkin_pkg pyyaml rospkg defusedxml scipy==1.2.0
 
 # Install Tensorflow Edge CPU libraries
 RUN echo "deb https://packages.cloud.google.com/apt coral-edgetpu-stable main" | tee /etc/apt/sources.list.d/coral-edgetpu.list \

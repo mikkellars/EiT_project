@@ -334,8 +334,8 @@ class LearnFollow():
         # Squared error
         # self.sq_error += math.pow(predictive, 2)
         # print(f'Squared error {self.sq_error:0.4f}, Time {rospy.get_time() - self.time_log:0.4f}')
-        if reflex != 0:
-            print(f'reflex : {reflex}')
+        # if reflex != 0:
+        #     print(f'reflex : {reflex}')
 
 
     def __callback(self, msg):
