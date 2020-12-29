@@ -14,11 +14,9 @@ TARGET_DIST = 1.75
 RATE = 50
 
 class polar_PID():
-    def __init__(self):
-        print("STARTING POLAR PID NODE")
-    
-        topic_out = ""
-        self.simulate = rospy.get_param('~simulate', False)
+    def __init__(self, simulate):
+        self.simulate = simulate
+
         if not self.simulate:
             self.P = 0.015
             self.I = 0.001
@@ -38,12 +36,11 @@ class polar_PID():
             self.msgType = Twist
         
 
-        rospy.init_node("wall_distance_PID_controller", anonymous=False)
+        
         topic_in = "laser/dist_to_wall"
         self.subscription = rospy.Subscriber(topic_in, Polar_dist, self.PID)
         self.publisher = rospy.Publisher(topic_out, self.msgType, queue_size=1)
-        self.rate = RATE
-        rospy.Rate(self.rate)  # or whatever
+        
         self.last_err = 0
         self.integral_err = 0
 
@@ -122,9 +119,9 @@ class polar_PID():
         #    with open('/assets/images/laser_scan/dist_err.npy', 'wb') as f:
         #       np.save(f, self.dists, allow_pickle=True)
 
-def main(args=None):
-    PID_node = polar_PID()
-    rospy.spin()
+# def main(args=None):
+#     PID_node = polar_PID()
+#     rospy.spin()
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

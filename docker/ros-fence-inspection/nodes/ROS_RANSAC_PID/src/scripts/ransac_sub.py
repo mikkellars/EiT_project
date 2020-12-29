@@ -18,7 +18,6 @@ import time
 
 MIN_RANGE = 0.4             #Meters
 MAX_RANGE = 5.6             #Meters
-RATE = 50                   #Hz
 MIN_INLIERS = 8             #Observations
 RESIDUAL_THRESHOLD = 0.1    #Meters
 MAX_FAILS = 1               #Nr of times RANSAC may fail before we give up
@@ -104,28 +103,24 @@ def naive_merge_cluster(clusters, max_cluster_distance):
     return clusters
 
 class RANSAC_subscriber():
-    def __init__(self):
-        if not rospy.has_param('~simulate'):
-            ValueError('Need to set simulate param')
-
-        self.simulate = True #rospy.get_param('~simulate')
+    def __init__(self, simulate):
+        self.simulate = simulate
         
         s_topic = "/laser/scan" 
         p_topic = "laser/dist_to_wall"
         if not self.simulate:
             s_topic = "/scan"
-        rospy.init_node("ransac_wall_dist_pub", anonymous=True)
+
         self.subscription = rospy.Subscriber(s_topic, LaserScan, self.RANSAC, queue_size=1)
         print('starting RANSAC node')
         self.publisher = rospy.Publisher(p_topic, Polar_dist, queue_size=1)
-        self.rate = rospy.get_param('rate', RATE)
+      
         self.max_range = MAX_RANGE
         self.min_range = MIN_RANGE
         self.min_inliers = MIN_INLIERS
         self.residual_threshold = RESIDUAL_THRESHOLD
         self.max_fails = MAX_FAILS
         self.max_cluster_dist = MAX_CLUSTER_DIST
-        rospy.Rate(self.rate)
         self.image = np.array([0])
         self.drawScale = 125
         self.num = 0
@@ -315,11 +310,11 @@ class RANSAC_subscriber():
             ey = np.int(np.round(self.image.shape[0]/2 - self.drawScale * line[1, 1]))
             cv.line(self.image, (sx, sy), (ex, ey), color)
 
-def main(args=None):
-    RANSAC_node = RANSAC_subscriber()
-    rospy.spin()
+# def main(args=None):
+#     RANSAC_node = RANSAC_subscriber()
+#     rospy.spin()
 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()
 
