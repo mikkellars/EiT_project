@@ -11,12 +11,11 @@ import roslaunch
 
 from sim_spawn.spawn_frobit import SpawnFrobit
 from ico.learn_and_follow import LearnFollow 
-import time
 
 random.seed(0)
 
 # Sqaure map spawn area
-MAP_1 = np.array(([(9, -5), (8.5, -4.5)],[(9, -0.9),(8.5, 1.4)])) # [ [x-outer bound, x-inner bound], [y-outer bound, y-inner bound]] (9, -5), (8, -4)],[(9, -0.9),(8, 0.9)
+MAP_1 = np.array(([(9, -5), (8.5, -4.5)],[(9, -0.9),(8.5, -0.4)])) # [ [x-outer bound, x-inner bound], [y-outer bound, y-inner bound]] (9, -5), (8, -4)],[(9, -0.9),(8, 0.9)
 
 def gen_spawn_pos(map_bound, num_of_pos):
     positions = list()
@@ -50,7 +49,7 @@ def gen_spawn_pos(map_bound, num_of_pos):
             gen_y = random.uniform(y_bound[0][0], y_bound[1][0])
 
         
-        positions.append((gen_x, gen_y, rand_ang))
+      #  positions.append((gen_x, gen_y, rand_ang))
 
 
     return positions
@@ -84,12 +83,11 @@ def main():
     # Running ico learning on the different generate poses
     for x, y, angle in poses:
         spawn.move_frobit('frobit', x, y, angle=angle)
-        time.sleep(2)
+        
         # Running ico learning for one lap
-        #print(spawn.completed_one_lap(time_before_check=5))
-        # learn_follow = LearnFollow(sub_name, pub_name_mc, target_dist, learn_inteval, simulate=True, learn_type = 'one', log=False)
-        # while not spawn.completed_one_lap(time_before_check=5):
-        #     pass
+        learn_follow = LearnFollow(sub_name, pub_name_mc, target_dist, learn_inteval, simulate=True, learn_type = 'one', log=False)
+        while not spawn.completed_one_lap(time_before_check=5):
+            pass
 
 if __name__ == '__main__':
     main()
