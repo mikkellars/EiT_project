@@ -108,7 +108,7 @@ class RANSAC_subscriber():
         if not rospy.has_param('~simulate'):
             ValueError('Need to set simulate param')
 
-        self.simulate = False#True #rospy.get_param('~simulate')
+        self.simulate = True #rospy.get_param('~simulate')
         
         s_topic = "/laser/scan" 
         p_topic = "laser/dist_to_wall"
@@ -132,8 +132,8 @@ class RANSAC_subscriber():
         self.dists = []
         self.start_time = time.time()
 
-        with open('/assets/images/laser_scan/dist_err.npy', 'wb') as f:
-           pass
+       # with open('/assets/images/laser_scan/dist_err.npy', 'wb') as f:
+       #    pass
 
     def RANSAC(self, msg):
         #start_time = time.time()
@@ -277,9 +277,9 @@ class RANSAC_subscriber():
     #        cv.imwrite(f'/assets/images/laser_scan/scan_{self.num:03d}.jpg', self.image)
     #        print(f'Writing image: {self.num}')
 
-        if (not self.simulate and self.num % 1 == 0) or (self.simulate and self.num%500 == 0):
-             with open('/assets/images/laser_scan/dist_err.npy', 'wb') as f:
-                np.save(f, np.asarray(self.dists), allow_pickle=True)
+        # if (not self.simulate and self.num % 1 == 0) or (self.simulate and self.num%500 == 0):
+        #      with open('/assets/images/laser_scan/dist_err.npy', 'wb') as f:
+        #         np.save(f, np.asarray(self.dists), allow_pickle=True)
 
         self.num += 1
         #print(f'Took { time.time() - start_time:0.3f} s')

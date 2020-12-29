@@ -10,7 +10,7 @@ The project can both run in ros-gazebo simulation and on the frobit itself in re
 
 ## Real life
 
-Due to LIDAR limits the frobit was not able to detect lines along an fence. However it could detect lines a more dense structure such as a building. The frobit driving around a building and trying to follow a fence is illustrated below. 
+Due to LIDAR limits the frobit was not able to detect lines along an fence. However it could detect lines a more dense structure such as a building. The frobit driving using the PID controller as distance control is illustrated below. 
 
 | Straight section | Corner section | Fence following | 
 |:----------------:|:--------------:|:---------------:|

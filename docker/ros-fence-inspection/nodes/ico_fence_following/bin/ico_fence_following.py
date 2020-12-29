@@ -13,6 +13,7 @@ def main():
 
     simulate = rospy.get_param('~simulate')
     log = rospy.get_param('~log')
+    stabilize = rospy.get_param('~stabilize')
     
     if simulate: # Simulate
         pub_name_mc = '/velocity_controller/cmd_vel'
@@ -24,7 +25,7 @@ def main():
     target_dist = 1.0 # Meters
     learn_inteval = 0.2 # Meters: Accepted interval without learning
 
-    learn_follow = LearnFollow(sub_name, pub_name_mc, target_dist, learn_inteval, simulate, learn_type = 'two', log=log)
+    learn_follow = LearnFollow(sub_name, pub_name_mc, target_dist, learn_inteval, simulate, learn_type = 'one', log=log, stabilize_ang = stabilize)
 
     try:
         rospy.spin()

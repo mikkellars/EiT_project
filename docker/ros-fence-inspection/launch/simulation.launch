@@ -8,11 +8,12 @@
 
     <node name="ico_fence_following" pkg="ico_fence_following" type="ico_fence_following.py" output="screen" clear_params="true">
         <param name="simulate" value="true" />
-        <param name="log" value="false" />
+        <param name="log" value="true" />
+        <param name="stabilize" value="false" />
     </node> 
 
     <node name="dist_ransac_lidar" pkg="dist_ransac" type="ransac_sub.py" output="screen" clear_params="true">
-        <param name="simulate" value="false" />
+        <param name="simulate" value="true" />
     </node>
    <!-- 
     <node name="line_extractor" pkg="laser_line_extraction" type="line_extraction_node">

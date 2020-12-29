@@ -5,7 +5,7 @@
     </node> 
 
     <node name="dist_ransac_lidar" pkg="dist_ransac" type="ransac_sub.py" output="screen" clear_params="true">
-        <param name="simulate" value="false" />
+        <param name="simulate" value="true" />
     </node>
 
 </launch>
