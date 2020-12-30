@@ -91,7 +91,7 @@ def main():
 
     rospy.init_node("ico_fence_follow_eval", anonymous=True)
 
-    r = rospy.Rate(10)
+    r = rospy.Rate(100)
     
     START_TIME = rospy.get_time()
     
@@ -101,29 +101,35 @@ def main():
     spawn = SpawnFrobit()
 
     # Running ico learning on the different generate poses
-    bar = tqdm(poses)
-    for x, y, angle in bar:
+    # bar = tqdm(poses)
+    # for x, y, angle in bar:
         
-        # print(f'x: {x},  y: {y},  angle:  {angle}')
-        spawn.move_frobit('frobit', x, y, angle=angle)
-       # time.sleep(1)
-        # # Running ico learning for one lap
-       # RANSAC_node = RANSAC_subscriber(simulate=True)
+    #     # print(f'x: {x},  y: {y},  angle:  {angle}')
+    #     spawn.move_frobit('frobit', x, y, angle=angle)
+    #    # time.sleep(1)
+    #     # # Running ico learning for one lap
+    #    # RANSAC_node = RANSAC_subscriber(simulate=True)
        
-        learn_follow = LearnFollow(sub_name, pub_name_mc, TARGET_DIST, learn_inteval, simulate=True, learn_type = 'one', log=False)
-        rospy.Subscriber(sub_name, Polar_dist, save_dist, queue_size=1)
+    #     learn_follow = LearnFollow(sub_name, pub_name_mc, TARGET_DIST, learn_inteval, simulate=True, learn_type = 'one', log=False)
+    #     rospy.Subscriber(sub_name, Polar_dist, save_dist, queue_size=1)
 
+    #     while not spawn.completed_one_lap(time_before_check=5):
+    #         r.sleep()
+    #     FILE_NUM += 1
+    #     START_TIME = rospy.get_time()
+
+    # Running ico learning on the same pose
+    bar = tqdm(range(31))
+    rospy.Subscriber(sub_name, Polar_dist, save_dist, queue_size=1)
+    for i in bar:
+        #spawn.move_frobit('frobit', 0, -5.695796, angle=0) # square map
+        spawn.move_frobit('frobit', -1.012620, -4.776310, angle=-35) # airport map
+        learn_follow = LearnFollow(sub_name, pub_name_mc, TARGET_DIST, learn_inteval, simulate=True, learn_type = 'one', log=False)
+        
         while not spawn.completed_one_lap(time_before_check=5):
             r.sleep()
         FILE_NUM += 1
         START_TIME = rospy.get_time()
-
-
-    # spawn.move_frobit('frobit', poses[12][0], poses[12][1], angle=poses[12][2])
-    # print(poses[29][0], poses[29][1])
-    # learn_follow = LearnFollow(sub_name, pub_name_mc, TARGET_DIST, learn_inteval, simulate=True, learn_type = 'one', log=False)
-    # while not spawn.completed_one_lap(time_before_check=5):
-    #     r.sleep()
 
 if __name__ == '__main__':
     main()
