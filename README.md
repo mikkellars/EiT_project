@@ -17,9 +17,13 @@ Due to LIDAR limits the frobit was not able to detect lines along an fence. Howe
 | ![Real life straight](assets/real_life_straight.gif) | ![Real life corner](assets/real_life_corner.gif) | ![Real life fence following](assets/real_life_fence_follow.gif)| 
 
 ## Simulation
-| Airport map |
-|:-----------:|
-| ![Simulation airport](assets/airport_sim.gif) |
+|  Dog-bone map ICO |  Square map ICO | Airport map ICO |
+|:-----------------:|:---------------:|:---------------:|
+| ![Simulation ico dog-bone](assets/dog_bone_ico_optim.gif) | ![Simulation ico square](assets/sqare_map_ico.gif) | ![Simulation ico airport](assets/airport_sim.gif) |
 
 ## Vision
-The vision folder contains the different algorithm used to detect holes in the fence. W
+The vision folder contains the different algorithm used to detect holes in the fence. Below is a small example of one of the nueral network for hole detection.
+
+|  YOLOv5 sim example |  YOLOv5 real example |
+|:-------------------:|:--------------------:|
+| ![](vision/assets/yolov5_sim.gif) | ![](vision/assets/yolov5_real_world.gif) |
