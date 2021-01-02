@@ -26,13 +26,13 @@ velocity_controller:
       max_velocity           : 3.0  # (108 [Max Wheel RPM] * 2 * PI * 0.08[Radius]) / 60 [m/s] 
       min_velocity           : -3.0  # m/s
       has_acceleration_limits: true
-      max_acceleration       : 1.0  # m/s^2
-      min_acceleration       : -1.0  # m/s^2
+      max_acceleration       : 0.5  # m/s^2
+      min_acceleration       : -0.5  # m/s^2
   angular:
     z:
       has_velocity_limits    : true
       max_velocity           : 3.14   # rad/s
       min_velocity           : -3.14  # rad/s
       has_acceleration_limits: true
-      max_acceleration       : 2.0   # rad/s^2
-      min_acceleration       : -2.0   # rad/s^2
+      max_acceleration       : 1.0   # rad/s^2
+      min_acceleration       : -1.0   # rad/s^2

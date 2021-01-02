@@ -1,0 +1,20 @@
+<launch>
+    <!--
+    <node name="detection" pkg="detection" type="detection.py" output="screen" clear_params="true">
+        <param name="use_tpu" value="true" />
+        <param name="simulate" value="false" />
+    </node>
+    -->
+
+    <node name="PID_fence_following" pkg="dist_ransac" type="polar_PID.py" output="screen" clear_params="true">
+        <param name="simulate" value="false" />
+    </node>
+
+    <node name="dist_ransac_lidar" pkg="dist_ransac" type="ransac_sub.py" output="screen" clear_params="true">
+        <param name="simulate" value="false" />
+    </node>
+
+
+  
+</launch>
+
