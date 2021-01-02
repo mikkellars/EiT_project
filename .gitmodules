@@ -1,5 +1,5 @@
-[submodule "vision/yolov5"]
-	path = vision/yolov5
+[submodule "vision/yolov5/yolov5"]
+	path = vision/yolov5/yolov5
 	url = https://github.com/ultralytics/yolov5
 [submodule "vision/utils/rosbag2video"]
 	path = vision/utils/rosbag2video
